@@ -1,0 +1,8 @@
+.env
+.DS_Store
+
+node_modules
+dist
+
+apps/public/**/stream/*.ts
+apps/public/**/*.mp4
