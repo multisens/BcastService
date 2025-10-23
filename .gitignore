@@ -4,5 +4,5 @@
 node_modules
 dist
 
-apps/public/**/stream/*.ts
-apps/public/**/*.mp4
+public/**/stream/*.ts
+public/**/*.mp4
