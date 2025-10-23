@@ -29,6 +29,9 @@ The **Broadcaster Service** project provides an evironment for simulating a TV 3
 # Execution
 
 Components managed by PM2.
+
 ```$ npm i```
+
 ```$ npm run build```
+
 ```$ npm run start```
