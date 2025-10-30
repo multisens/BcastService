@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            :root {
+                --base-size: 1vw; /* Unidade base baseada na largura da viewport */
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                height: 100%;
+                font-family: Verdana;
+            }
+
+            .main {
+                position: relative;
+                width: 100vw;
+                height: 100vh;
+
+                > * {
+                    position: absolute;
+                    display: block;
+                    border: none;
+                }
+            }
+
+            .popup {
+                top: 5vh;
+                height: calc(100% - 10vh);
+                transform: translateX(-100%);
+                width: 15%;
+                left: calc(100% - 5vh);
+                border-radius: 1vh;
+                background-color: rgba(45, 45, 45, 0.90);
+                color: rgb(200,200,200);
+                font-size: calc(1vw + 0.5vh);
+                display: grid;
+                gap: 1vw;
+                grid-template-columns: 100%;
+                grid-template-rows: 1fr 5fr 2fr;
+                align-items: center;
+            }
+
+            .header {
+                display: grid;
+                align-items: center;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 100%;
+
+                img {
+                    width: 40%;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            }
+
+            .middle {
+                display: grid;
+                gap: 1vw;
+                grid-template-columns: 100%;
+                grid-template-rows: 1fr 3fr 2fr;
+                align-items: center;
+                text-align: center;
+
+                img {
+                    width: 80%;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            }
+
+            .footer {
+                display: grid;
+                gap: 1vw;
+                grid-template-columns: 100%;
+                grid-template-rows: 1fr 1fr;
+                align-items: center;
+
+                .button {
+                    background-color: rgb(100, 100, 100);
+                    background-image: url('media/webmedia/btn-background.png');
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    width: 90%;
+                    height: 6vh;
+                    margin-left: auto;
+                    margin-right: auto;
+                    font-size: calc(1vw + 0.6vh);
+                    text-align: center;
+                    display: grid;
+                    align-items: center;
+                }
+            }
+
+            .focused {
+                outline: 2px solid rgb(200, 200, 200);
+            }
+        </style>
+        <script src="/js/jquery-3.7.1.min.js"></script>
+        <script src="/js/navigation.js"></script>
+    </head>
+    <body>
+        <div class="main">
+            <div id="logos" class="popup" style="background-color: transparent;">
+                <div class="header">
+                    <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" select="openVRPop"/>
+                    <img id="cmp" src="media/webmedia/companion-logo.png" moveleft="vr" select="openCMPPop"/>
+                </div>
+            </div>
+
+            <div id="vrpopup" class="popup">
+                <div class="header">
+                    <img id="vr-logo" src="media/webmedia/vr-logo.png"/>
+                </div>
+
+                <div class="middle">
+                    <span>Connect your VR Headset!</span>
+                    <img src="media/webmedia/video.png"/>
+                </div>
+
+                <div class="footer">
+                    <div id="vr-conn" class="button" movedown="vr-back" select="btnVRConn"><span>CONNECTED</span></div>
+                    <div id="vr-back" class="button" moveup="vr-conn" select="btnVRBack"><span>BACK</span></div>
+                </div>
+            </div>
+
+            <div id="cmppopup" class="popup">
+                <div class="header">
+                    <span></span>
+                    <img id="cmp-logo" src="media/webmedia/companion-logo.png"/>
+                </div>
+
+                <div class="middle">
+                    <span>Open your <br/> Companion App</span>
+                    <img src="media/webmedia/qrcode.png"/>
+                </div>
+
+                <div class="footer">
+                    <div id="cmp-conn" class="button" movedown="cmp-back" select="btnCMPConn"><span>CONNECTED</span></div>
+                    <div id="cmp-back" class="button" moveup="cmp-conn" select="btnCMPBack"><span>BACK</span></div>
+                </div>
+            </div>
+        </div>
+    
+        <script>
+            window.addEventListener('message', receiveFrameMessage);
+            document.addEventListener('keydown', (e) => {navigate(e.key)});
+
+            function receiveFrameMessage(e) {
+                let m = JSON.parse(e.data);
+                if (m.type == 'keydown') {
+                    document.dispatchEvent(new KeyboardEvent('keydown', {key: m.key}));
+                }
+            }
+            
+            $('#logos').show();
+            $('#vrpopup').hide();
+            $('#cmppopup').hide();
+            $('#vr').addClass('focused');
+
+            function openVRPop() {
+                $('#logos').hide();
+                $('#vrpopup').show();
+                $('#cmppopup').hide();
+                $('#vr').removeClass('focused');
+                $('#vr-conn').addClass('focused');
+            }
+
+            function openCMPPop() {
+                $('#logos').hide();
+                $('#vrpopup').hide();
+                $('#cmppopup').show();
+                $('#cmp').removeClass('focused');
+                $('#cmp-conn').addClass('focused');
+            }
+
+            function btnBack() {
+                $('#logos').show();
+                $('#vrpopup').hide();
+                $('#cmppopup').hide();
+            }
+
+            function btnVRBack() {
+                btnBack();
+                $('#vr-back').removeClass('focused');
+                $('#vr').addClass('focused');
+            }
+
+            function btnCMPBack() {
+                btnBack();
+                $('#cmp-back').removeClass('focused');
+                $('#cmp').addClass('focused');
+            }
+
+            function btnVRConn() {
+                // acessar rota do CCWS para pegar dispositivos conectados na classe guarana
+                // conectar nos websockets recebidos
+                // mandar mensagem de carregar cena no grarana
+                // recebendo praparation.end manda presentation.start
+            }
+
+            function btnCMPConn() {
+                // acessa rota do CCWS para pegar dispositivos conectados na classe companion
+                // conectar nos websockets recebidos
+                // { type: 'vote', buttons: [{ imagem, url}} ]} -- combinar com Rodrigo os formato
+            }
+
+            // pegar os tempos do video e chamar as funções para tocar efeitos sensoriais e para abrir os popups de votação
+        </script>
+  </body>
+</html>
