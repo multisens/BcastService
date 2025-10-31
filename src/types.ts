@@ -26,6 +26,32 @@ export type bam = {
 export type bamt = bam[];
 
 
+export type playlist = {
+  id: string;
+  profiles: string;
+  type: 'static' | 'dynamic';
+  availabilityStartTime?: string;
+  publishTime?: string;
+  suggestedPresentationDelay?: string;
+  maxSegmentDuration?: string;
+  BaseURL?: string;
+  AdaptationSet: {
+    id?: string;
+    lang?: string;
+    contentType?: 'video' | 'audio' | 'text' | string;
+    SupplementalProperty?: string[];
+    Representation: {
+      id: string;
+      SegmentTemplate?: {
+        media: string;
+        initialization?: string;
+      };
+    }[];
+  }[];
+};
+
+export type mpd = playlist[];
+
 type esg_service = {
   validFrom: string,
   validTo: string,
