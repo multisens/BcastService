@@ -130,22 +130,14 @@
       <p>Obrigado por jogar.</p>
     </div>
 
-    <script src="/jquery-3.7.1.min.js"></script>
-    <script src="/navigation.js"></script>
-    <script src="/bootstrap.js"></script>
-    <script src="/socket.io.min.js"></script>
-    <script src="/qrcode.min.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/socket.io.min.js"></script>
+    <script src="/js/qrcode.min.js"></script>
 
 
     <script>
-      window.addEventListener("message", receiveFrameMessage);
-      postFrameMessage({ type: "loaded" });
-
-      function handleKey(k) {
-        if (k == "Escape") {
-          back();
-        }
-      }
+      document.addEventListener('keydown', (e) => {navigate(e.key)});
 
       const roomId = "<%= roomId %>";
       const playerUrl = "<%= playerUrl %>";
