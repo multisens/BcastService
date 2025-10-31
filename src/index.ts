@@ -38,16 +38,20 @@ const client:MqttClient = mqtt.connect(`mqtt://${process.env.MQTT_HOST || 'local
 
 // modules for specific services
 import webmedia from './modules/webmedia';
+import uff from './modules/uff';
+import eduplay from './modules/eduplay';
 
 const services = new Map<string, ServiceInterface>([
-  ['webmedia', webmedia]
+  ['webmedia', webmedia],
+  ['uff', uff],
+  ['eduplay', eduplay]
 ]);
 
 const bsid: string = cuid.slug();
 const bamt: bamt = [];
 
 services.forEach((mod, key) => {
-  mod.init(`localhost:${_PORT}`, client);
+  mod.init(`localhost:${_PORT}`);
   bamt.push(mod.bam());
 
   if (mod.router) {
@@ -55,11 +59,26 @@ services.forEach((mod, key) => {
   }
 });
 
-client.publish(`tlm/lls/${bsid}/bamt`, JSON.stringify(bamt), { retain : true });
-
+app.get('/dispose', (req, res) => {
+  clean_topics();
+  res.status(200).send();
+});
 
 app.listen(_PORT, () => {
   console.log(`App running on port: ${_PORT}`);
+});
+
+client.on('connect', () => {
+  console.log('MQTT client connected');
+
+  client.publish(`tlm/lls/${bsid}/bamt`, JSON.stringify(bamt), { retain : true });
+  services.forEach((mod, _) => {
+    mod.sendSLS(client);
+  });
+});
+
+client.on('disconnect', () => {
+  clean_topics();
 });
 
 // notify loading is complete
@@ -69,13 +88,13 @@ if (process.send) {
 
 
 // for shutting down
-process.on('SIGTERM', clean_topics);
-process.on('SIGINT', clean_topics);
-process.on('SIGUSR2', clean_topics);
+// process.on('SIGTERM', clean_topics);
+// process.on('SIGINT', clean_topics);
+// process.on('SIGUSR2', clean_topics);
 
 function clean_topics() {
   client.publish(`tlm/lls/${bsid}/bamt`, '', { retain : true });
   services.forEach((mod, _) => {
-    mod.dispose();
+    mod.dispose(client);
   });
 }

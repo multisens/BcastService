@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            :root {
+                --base-size: 1vw; /* Unidade base baseada na largura da viewport */
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                height: 100%;
+                font-family: Verdana;
+            }
+
+            .main {
+                position: relative;
+                width: 100vw;
+                height: 100vh;
+
+                > * {
+                    position: absolute;
+                    display: block;
+                    border: none;
+                }
+            }
+        </style>
+        <script src="/js/sepe.js"></script>
+        <script>
+            async function execute() {
+                const sepe = await findSepe();
+                if (!sepe) {
+                    console.error("No SEPE found, exiting.");
+                    return;
+                }
+
+                console.log("Scheduling light effects...");
+                // Schedule light effects
+                /*
+                    00:00 azul água
+                    00:09 rosa/roxo
+                    00:17 azul água
+                    00:28 azul escuro
+                    00:36 laranja
+                    00:45 branco azulado
+                    00:52 verde amarelado
+                    00:58 branco azulado
+                    01:18 azul água
+                    01:36 verde
+                    01:45 branco azulado
+                */
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "start", [0, 0, 255]); // Blue light
+                    playScentEffect(sepe, "start", 100); // start strong scent
+                }, 0);
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "set", [255, 0, 255]); // Pink/Purple light
+                }, 5000);
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "set", [0, 0, 255]); // Blue light
+                }, 13000);
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "set", [0, 0, 139]); // Dark Blue light
+                }, 25000);
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "set", [255, 165, 0]); // Orange light
+                }, 33200);
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "set", [240, 248, 255]); // Light Blue/White light
+                }, 42000);
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "set", [173, 255, 47]); // Greenish Yellow light
+                }, 48000);
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "set", [240, 248, 255]); // Light Blue/White light
+                }, 55000);
+
+                setTimeout(() => {
+                    playLightEffect(sepe, "set", [0, 0, 255]); // Blue light
+                }, 64000);
+            }
+        </script>
+    </head>
+    <body>
+        <script>
+            execute();
+
+            const video = document.getElementById("tvvideo");
+            video.addEventListener('ended', function(){
+                execute();
+                video.currentTime = 0;
+                video.play();
+            });
+
+            window.addEventListener('beforeunload', async (e) => {
+                const sepe = await findSepe();
+
+                console.log("Turning effects off before quitting page.")
+                await playLightEffect(sepe, "stop", [0,0,0]);
+                await playScentEffect(sepe, "start", 0);
+            });
+        </script>
+  </body>
+</html>

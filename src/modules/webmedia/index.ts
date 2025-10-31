@@ -8,23 +8,27 @@ import { ServiceInterface, bam, esg, bald } from '../../types';
 
 class WebMedia implements ServiceInterface {
   base_rul!: string;
-  client!: MqttClient;
-  router: Router = express.Router();
-  sid: string = `urn:tv30:service:${cuid.slug()}`;
+  router: Router;
+  sid: string;
 
-
-  init(base_rul: string, client: MqttClient): void {
-    this.base_rul = base_rul;
-    this.client = client;
-    this.router.get('/', this.get_root);
-
-    this.client.publish(`tlm/sls/${this.sid}/esg`, JSON.stringify(this.esg()), { retain : true });
-    this.client.publish(`tlm/sls/${this.sid}/bald`, JSON.stringify(this.bald()), { retain : true });
+  constructor() {
+    this.router = express.Router();
+    this.sid = `urn:tv30:service:${cuid.slug()}`;
   }
 
-  dispose(): void {
-    this.client.publish(`tlm/sls/${this.sid}/esg`, '', { retain : true });
-    this.client.publish(`tlm/sls/${this.sid}/bald`, '', { retain : true });
+  init(base_rul: string): void {
+    this.base_rul = base_rul;
+    this.router.get('/', this.get_root.bind(this));
+  }
+
+  sendSLS(mqtt: MqttClient): void {
+    mqtt.publish(`tlm/sls/${this.sid}/esg`, JSON.stringify(this.esg()), { retain : true });
+    mqtt.publish(`tlm/sls/${this.sid}/bald`, JSON.stringify(this.bald()), { retain : true });
+  }
+
+  dispose(mqtt: MqttClient): void {
+    mqtt.publish(`tlm/sls/${this.sid}/esg`, '', { retain : true });
+    mqtt.publish(`tlm/sls/${this.sid}/bald`, '', { retain : true });
   }
 
   bam(): bam {
