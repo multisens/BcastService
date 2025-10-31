@@ -3,8 +3,9 @@ import { Router } from 'express';
 
 
 export interface ServiceInterface {
-  init(port: string, mqtt: MqttClient): void;
-  dispose(): void;
+  init(port: string): void;
+  sendSLS(mqtt: MqttClient): void;
+  dispose(mqtt: MqttClient): void;
   bam(): bam;
   router?: Router;
 }
