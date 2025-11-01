@@ -195,12 +195,88 @@
                 $('#cmp').addClass('focused');
             }
 
-            function btnVRConn() {
+            var MSG_COUNT = 0;
+            var handle_vr = "";
+            var ws = new WebSocket("ws://localhost:8085");
+            ws.onopen = function () {
+                console.log("Connection opened...");
+            };
+            ws.onmessage = ReceiveDeviceMessage;
+            ws.onclose = function () {
+                console.log("Connection closed...");
+                MSG_COUNT = 0;
+            };
+            
+            function ReceiveDeviceMessage(evt) {
+                var msg = JSON.parse(evt.data);
+                console.log(JSON.stringify(msg, undefined, 2));
+                if(msg.message.deviceClass == "guarana")
+                    handle_vr = msg.handle;
+                MSG_COUNT += 1;
+            }
+            
+            async function btnVRConn() {
                 // acessar rota do CCWS para pegar dispositivos conectados na classe guarana
                 // conectar nos websockets recebidos
                 // mandar mensagem de carregar cena no grarana
                 // recebendo praparation.end manda presentation.start
+                function wait(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+                
+                function SendConfigManual(ws, config) {
+                    ws.send(JSON.stringify(config));
+                }
+                function SendDeviceMessage(ws, form) {
+                    console.log(handle_vr);
+                    if(handle_vr == "")
+                    {
+                        alert("Dispositivo não encontrado");
+                    }
+                    else
+                    {
+                        ws.send(JSON.stringify({
+                        service: 'remotedevice',
+                        handle: handle_vr,
+                        message: form
+                        }));
+                        console.log("Device Message Sent");
+                    }
+                }
+
+                //App Config
+                SendConfigManual(ws, {
+                    service: "appfiles",
+                    appid: "100",
+                    path: "D:/GitHub/Guarana-Testing/WebMedia"
+                });
+                //User Config
+                SendConfigManual(ws, {
+                    service: "userapi",
+                    path: "D:/GitHub/Guarana-Testing/UserAPI",
+                    currentUser: "f626b4f2-d989-4fbf-9645-f830fd12b348",
+                    currentService: "midiacom"
+                });
+                
+                //Node Metadata Message
+                SendDeviceMessage(ws, {
+                    nodeId: "m1",
+                    nodeSrc: "cena.ncl360",
+                    appId: "100",
+                    type: "application/x-ncl360"
+                });
+                
+                //await wait(20000);
+                //Action Metadata Message
+                SendDeviceMessage(ws, {
+                    nodeId: "m1",
+                    label: "",
+                    appId: "100",
+                    eventType: "presentation",
+                    action: "start"
+                });
             }
+
 
             function btnCMPConn() {
                 // acessa rota do CCWS para pegar dispositivos conectados na classe companion
