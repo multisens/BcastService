@@ -1,3 +1,4 @@
+import cors from 'cors';
 import cuid from 'cuid';
 import * as dotenv from 'dotenv';
 import express, { Application, Request, Response, NextFunction } from 'express';
@@ -13,19 +14,12 @@ const app: Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
-app.use(function (req: Request, res: Response, next: NextFunction) {
-  // allowing local clients to connect to the server
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET, POST, OPTIONS, PUT, PATCH, DELETE'
-  );
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-Requested-With,content-type'
-  );
-  next();
-});
+app.use(cors({
+  origin: ['http://localhost:8080', 'http://127.0.0.1:8080'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Range'],
+  exposedHeaders: ['Content-Length', 'Content-Range'],
+}));
 
 // mqtt client configuration
 const client:MqttClient = mqtt.connect(`mqtt://${process.env.MQTT_HOST || 'localhost'}`, {

@@ -44,7 +44,7 @@ class WebMedia implements ServiceInterface {
         backgroundColor: '#282828ff',
         foregroundColor: '#c8c8c8ff',
         initialMediaURLs: [
-          `http://${this.base_rul}/media/uff/aquario1080.mp4`
+          `http://${this.base_rul}/hls/carnaval/playlist_1080p.m3u8`
         ]
       }
   }

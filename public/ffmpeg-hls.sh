@@ -1,7 +1,8 @@
 #!/bin/bash
+# usage: ./ffmpeg-hls.sh <path to file> <output subdir>
 
-INPUT_FILE="/Users/gablsilva/Downloads/graphic_overlays/sea_clip.mp4"
-OUTPUT_DIR="./hls"
+INPUT_FILE=$1
+OUTPUT_DIR="./hls/$2"
 MASTER_PLAYLIST_NAME="master.m3u8"
 CHILD_PLAYLIST_NAME="playlist_1080p.m3u8"
 
