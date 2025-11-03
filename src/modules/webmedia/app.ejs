@@ -80,7 +80,6 @@
 
                 .button {
                     background-color: rgb(100, 100, 100);
-                    background-image: url('media/webmedia/btn-background.png');
                     background-position: center;
                     background-repeat: no-repeat;
                     background-size: cover;
@@ -197,6 +196,7 @@
 
             var MSG_COUNT = 0;
             var handle_vr = "";
+            var handle_companion = [];
             var ws = new WebSocket("ws://localhost:8085");
             ws.onopen = function () {
                 console.log("Connection opened...");
@@ -212,6 +212,8 @@
                 console.log(JSON.stringify(msg, undefined, 2));
                 if(msg.message.deviceClass == "guarana")
                     handle_vr = msg.handle;
+                else if(msg.message.deviceClass == "companion")
+                    handle_companion.push(msg.handle);
                 MSG_COUNT += 1;
             }
             
@@ -282,6 +284,34 @@
                 // acessa rota do CCWS para pegar dispositivos conectados na classe companion
                 // conectar nos websockets recebidos
                 // { type: 'vote', buttons: [{ imagem, url}} ]} -- combinar com Rodrigo os formato
+
+                function wait(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+                
+                function SendConfigManual(ws, config) {
+                    ws.send(JSON.stringify(config));
+                }
+                function SendDeviceMessage(ws, form) {
+                    console.log(handle_companion);
+                    // Enviar mensagem para todos os dispositivos companion conectados
+                    if(!handle_companion || handle_companion.length === 0) {
+                        alert("Nenhum dispositivo companion encontrado");
+                        return;
+                    }
+                    handle_companion.forEach(function(h) {
+                        try {
+                            ws.send(JSON.stringify({
+                                service: 'remotedevice',
+                                handle: h,
+                                message: form
+                            }));
+                            console.log("Device Message Sent to", h);
+                        } catch (err) {
+                            console.error("Failed to send to", h, err);
+                        }
+                    });
+                }                
             }
 
             // pegar os tempos do video e chamar as funções para tocar efeitos sensoriais e para abrir os popups de votação
