@@ -1,0 +1,420 @@
+[
+  {
+    "SegStart": 0,
+    "SegEnd": 10,
+    "Action": "start",
+    "Color": [
+      255,
+      255,
+      255
+    ],
+    "Name": "Luz Variando de Cores"
+  },
+  {
+    "SegStart": 11,
+    "SegEnd": 11,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Variando"
+  },
+  {
+    "SegStart": 12,
+    "SegEnd": 64,
+    "Action": "start",
+    "Color": [
+      255,
+      255,
+      255
+    ],
+    "Name": "Luz Branca 1"
+  },
+  {
+    "SegStart": 65,
+    "SegEnd": 65,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Branca 1"
+  },
+  {
+    "SegStart": 66,
+    "SegEnd": 103,
+    "Action": "start",
+    "Color": [
+      255,
+      0,
+      0
+    ],
+    "Name": "Luz Vermelha"
+  },
+  {
+    "SegStart": 104,
+    "SegEnd": 104,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Vermelha"
+  },
+  {
+    "SegStart": 105,
+    "SegEnd": 140,
+    "Action": "start",
+    "Color": [
+      170,
+      0,
+      0
+    ],
+    "Name": "Luz Vermelha Escura 1"
+  },
+  {
+    "SegStart": 141,
+    "SegEnd": 141,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Vermelha Escura 1"
+  },
+  {
+    "SegStart": 142,
+    "SegEnd": 172,
+    "Action": "start",
+    "Color": [
+      0,
+      0,
+      170
+    ],
+    "Name": "Luz Azul Escura"
+  },
+  {
+    "SegStart": 173,
+    "SegEnd": 173,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Azul Escura"
+  },
+  {
+    "SegStart": 174,
+    "SegEnd": 238,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "Luz Preta 1"
+  },
+  {
+    "SegStart": 239,
+    "SegEnd": 239,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Preta 1"
+  },
+  {
+    "SegStart": 240,
+    "SegEnd": 491,
+    "Action": "start",
+    "Color": [
+      255,
+      255,
+      255
+    ],
+    "Name": "Luz Branca 2"
+  },
+  {
+    "SegStart": 492,
+    "SegEnd": 492,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Branca 2"
+  },
+  {
+    "SegStart": 493,
+    "SegEnd": 528,
+    "Action": "start",
+    "Color": [
+      255,
+      190,
+      0
+    ],
+    "Name": "Luz Amarela 1"
+  },
+  {
+    "SegStart": 529,
+    "SegEnd": 529,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Amarela 1"
+  },
+  {
+    "SegStart": 530,
+    "SegEnd": 538,
+    "Action": "start",
+    "Color": [
+      170,
+      0,
+      0
+    ],
+    "Name": "Luz Vermelho Escuro 2"
+  },
+  {
+    "SegStart": 539,
+    "SegEnd": 539,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Vermelho Escuro 2"
+  },
+  {
+    "SegStart": 540,
+    "SegEnd": 542,
+    "Action": "start",
+    "Color": [
+      0,
+      0,
+      255
+    ],
+    "Name": "Luz Azul 1"
+  },
+  {
+    "SegStart": 543,
+    "SegEnd": 543,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Azul 1"
+  },
+  {
+    "SegStart": 544,
+    "SegEnd": 608,
+    "Action": "start",
+    "Color": [
+      255,
+      255,
+      255
+    ],
+    "Name": "Luz Branca 3"
+  },
+  {
+    "SegStart": 609,
+    "SegEnd": 609,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Branca 3"
+  },
+  {
+    "SegStart": 610,
+    "SegEnd": 636,
+    "Action": "start",
+    "Color": [
+      255,
+      190,
+      0
+    ],
+    "Name": "Luz Amarela 2"
+  },
+  {
+    "SegStart": 637,
+    "SegEnd": 637,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Amarela 2"
+  },
+  {
+    "SegStart": 638,
+    "SegEnd": 723,
+    "Action": "start",
+    "Color": [
+      255,
+      255,
+      255
+    ],
+    "Name": "Luz Branca 4"
+  },
+  {
+    "SegStart": 724,
+    "SegEnd": 724,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Branca 4"
+  },
+  {
+    "SegStart": 725,
+    "SegEnd": 737,
+    "Action": "start",
+    "Color": [
+      0,
+      0,
+      255
+    ],
+    "Name": "Luz Azul 2"
+  },
+  {
+    "SegStart": 738,
+    "SegEnd": 738,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Azul 2"
+  },
+  {
+    "SegStart": 739,
+    "SegEnd": 775,
+    "Action": "start",
+    "Color": [
+      255,
+      255,
+      255
+    ],
+    "Name": "Luz Branca 5"
+  },
+  {
+    "SegStart": 776,
+    "SegEnd": 776,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Branca 5"
+  },
+  {
+    "SegStart": 777,
+    "SegEnd": 786,
+    "Action": "start",
+    "Color": [
+      0,
+      0,
+      255
+    ],
+    "Name": "Luz Azul 3"
+  },
+  {
+    "SegStart": 787,
+    "SegEnd": 787,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Azul 3"
+  },
+  {
+    "SegStart": 788,
+    "SegEnd": 892,
+    "Action": "start",
+    "Color": [
+      255,
+      255,
+      255
+    ],
+    "Name": "Luz Branca 6"
+  },
+  {
+    "SegStart": 893,
+    "SegEnd": 893,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Branca 6"
+  },
+  {
+    "SegStart": 894,
+    "SegEnd": 911,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "Luz Preta 2"
+  },
+  {
+    "SegStart": 912,
+    "SegEnd": 912,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Preta 2"
+  },
+  {
+    "SegStart": 913,
+    "SegEnd": 927,
+    "Action": "start",
+    "Color": [
+      255,
+      255,
+      255
+    ],
+    "Name": "Luz Branca 7 (Final)"
+  },
+  {
+    "SegStart": 928,
+    "SegEnd": 928,
+    "Action": "stop",
+    "Color": [
+      0,
+      0,
+      0
+    ],
+    "Name": "STOP Luz Branca 7 (Final do Loop)"
+  }
+]

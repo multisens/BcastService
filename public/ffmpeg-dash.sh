@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define o caminho do arquivo de entrada (assumindo que está no diretório pai)
-INPUT_FILE="/Users/gablsilva/tcc/BcastService/sea_clip.mp4"
+INPUT_FILE="videoplayback.mp4"
 # Define o diretório de saída como 'dash' no diretório pai (fora da pasta scripts)
 OUTPUT_DIR="./dash"
 MPD_NAME="playlist_1080p.mpd"
