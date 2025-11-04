@@ -1,7 +1,7 @@
 import cors from 'cors';
 import cuid from 'cuid';
 import * as dotenv from 'dotenv';
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application } from 'express';
 import mqtt, { MqttClient } from 'mqtt';
 import { ServiceInterface, bamt } from './types';
 dotenv.config();
@@ -29,6 +29,10 @@ const client:MqttClient = mqtt.connect(`mqtt://${process.env.MQTT_HOST || 'local
     protocolVersion: 5
 });
 
+// live stream simmulation
+import live_stream, { setBroker } from './modules/live_stream';
+app.use('/live', live_stream);
+setBroker(client);
 
 // modules for specific services
 import webmedia from './modules/webmedia';

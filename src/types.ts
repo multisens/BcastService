@@ -92,3 +92,29 @@ export type entryPackage = {
 }
 
 export type bald = entryPackage[];
+
+
+export type stream_action = {
+  seg_start: number,
+  seg_end: number,
+  action: {
+    name: string,
+    description: string,
+    color: number[]
+  }
+};
+
+export type stream_events = {
+  last_seg: number,
+  active: Set<number>,
+  actions : stream_action[]
+};
+
+export type hlsPlaylist = {
+  name: string,
+  seg_name: string,
+  playlist_size: number,
+  target_dur: number,
+  segments_dur: string,
+  events?: stream_events
+}

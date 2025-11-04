@@ -1,7 +1,7 @@
 import cuid from 'cuid';
 import express, { Router, Request, Response } from "express";
 import ejs from 'ejs';
-import { MqttClient } from 'mqtt/*';
+import { MqttClient } from 'mqtt';
 import path from 'path';
 import { nanoid } from "nanoid";
 import { ServiceInterface, bam, esg, bald } from '../../types';

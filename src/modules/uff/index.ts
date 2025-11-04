@@ -1,7 +1,7 @@
 import cuid from 'cuid';
 import express, { Router, Request, Response } from 'express';
 import ejs from 'ejs';
-import { MqttClient } from 'mqtt/*';
+import { MqttClient } from 'mqtt';
 import path from 'path';
 import { ServiceInterface, bam, esg, bald } from '../../types';
 
@@ -44,7 +44,7 @@ class UFF implements ServiceInterface {
         backgroundColor: '#282828ff',
         foregroundColor: '#c8c8c8ff',
         initialMediaURLs: [
-          `http://${this.base_rul}/media/uff/aquario1080.mp4`
+          `http://${this.base_rul}/live/hls/aquario.m3u8`
         ]
       }
   }

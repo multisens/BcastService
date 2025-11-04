@@ -1,7 +1,7 @@
 import cuid from 'cuid';
 import express, { Router, Request, Response } from 'express';
 import ejs from 'ejs';
-import { MqttClient } from 'mqtt/*';
+import { MqttClient } from 'mqtt';
 import path from 'path';
 import { ServiceInterface, bam, esg, bald } from '../../types';
 
@@ -44,7 +44,7 @@ class WebMedia implements ServiceInterface {
         backgroundColor: '#282828ff',
         foregroundColor: '#c8c8c8ff',
         initialMediaURLs: [
-          `http://${this.base_rul}/hls/carnaval/playlist_1080p.m3u8`
+          `http://${this.base_rul}/live/hls/carnaval.m3u8`
         ]
       }
   }
