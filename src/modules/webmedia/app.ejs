@@ -216,15 +216,15 @@
 
                 <div class="options">
                     <button class="option">
-                    <img id="vot_1" src="media/webmedia/icon_arrow1.png" moveup="vr" moveright="vot_2" alt="">
+                    <img id="vot_1" src="media/webmedia/icon_arrow1.png" moveup="vr" moveleft="vot_3" moveright="vot_2" alt="" select="btnVote(0)">
                     <span>Comissão de Frente</span>
                     </button>
                     <button class="option" >
-                    <img id="vot_2" src="media/webmedia/icon_arrow2.png" moveup="vr" moveleft="vot_1" moveright="vot_3" alt="">
+                    <img id="vot_2" src="media/webmedia/icon_arrow2.png" moveup="vr" moveleft="vot_1" moveright="vot_3" alt="" select="btnVote(0)">
                     <span>Abre-alas</span>
                     </button>
                     <button class="option" >
-                    <img id="vot_3" src="media/webmedia/icon_arrow3.png" moveup="vr" moveleft="vot_2" alt="">
+                    <img id="vot_3" src="media/webmedia/icon_arrow3.png" moveup="vr" moveleft="vot_2" moveright="vot_1" alt="" select="btnVote(0)">
                     <span>Bateria</span>
                     </button>
                 </div>
@@ -234,14 +234,18 @@
         <script>
             var video_timer = 0;
             window.addEventListener('message', receiveFrameMessage);
-            window.addEventListener("message", (event) => {
-                console.log("Tempo atual recebido:", event.data.tempo);  
-                if (event.data.tempo >= 60 && video_timer == 0)
+            window.addEventListener('message', (event) => {
+                console.log("Tempo atual recebido:",  event.data.time);  
+                if ( event.data.time >= 60 && video_timer == 0)
                 {
                     startVote();
                     video_timer +=1;
                 }
 
+            });
+
+            window.addEventListener('timeupdate', (e) => {
+            console.log('Tempo atual do vídeo:', e.detail);
             });
 
             document.addEventListener('keydown', (e) => {navigate(e.key)});
@@ -303,6 +307,10 @@
                 $('#cmp').addClass('focused');
             }
             
+            function btnVote(option) {
+                //Escolhe o que vai acontecer dependendo do click
+            }
+
             var MSG_COUNT = 0;
             var handle_vr = "";
             var ws = new WebSocket("ws://localhost:8085");
