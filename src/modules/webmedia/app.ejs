@@ -41,6 +41,7 @@
                 grid-template-columns: 100%;
                 grid-template-rows: 1fr 5fr 2fr;
                 align-items: center;
+                z-index: 3;
             }
 
             .header {
@@ -94,6 +95,72 @@
                 }
             }
 
+            .vota {
+            position: absolute;
+            top: 70%;
+            left: 10%;
+            width: 80%;
+            display: grid;
+            gap: 1rem;
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 1.2vw;
+            box-sizing: border-box;
+            }
+
+            .vota .bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 140%;
+            object-fit: fill;
+            z-index: 0;
+            }
+
+            .vota .title {
+            position: relative;
+            top: 45%;
+            z-index: 1;
+            color: white;
+            font-size: 3vw;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+            -webkit-text-stroke: 1px black;
+            margin: 0;
+            }
+
+            .vota .options {
+            position: relative;
+            top: 30%;
+            left: 3%;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2vw;
+            justify-items: center;
+            }
+
+            .vota .option {
+            display: flex;
+            align-items: center;
+            gap: 0.6vw;
+            background: rgba(0, 0, 0, 0);
+            border: none;
+            border-radius: 0.5vw;
+            padding: 0.6vw 1vw;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            font-size: 2vw;
+            text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+            -webkit-text-stroke: 1px black;
+            }
+
+            .vota .option img {
+            width: 4vw;
+            height: auto;
+            }
+
             .focused {
                 outline: 2px solid rgb(200, 200, 200);
             }
@@ -105,8 +172,8 @@
         <div class="main">
             <div id="logos" class="popup" style="background-color: transparent;">
                 <div class="header">
-                    <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" select="openVRPop"/>
-                    <img id="cmp" src="media/webmedia/companion-logo.png" moveleft="vr" select="openCMPPop"/>
+                    <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" movedown="vot_1" select="openVRPop"/>
+                    <img id="cmp" src="media/webmedia/companion-logo.png" moveleft="vr" movedown="vot_1" select="openCMPPop"/>
                 </div>
             </div>
 
@@ -142,16 +209,49 @@
                     <div id="cmp-back" class="button" moveup="cmp-conn" select="btnCMPBack"><span>BACK</span></div>
                 </div>
             </div>
+
+            <div id="votapopup" class="vota">
+                <img class="bg" src="media/webmedia/popup-background.png" alt="fundo">
+                <h2 class="title">Escolha do Replay</h2>
+
+                <div class="options">
+                    <button class="option">
+                    <img id="vot_1" src="media/webmedia/icon_arrow1.png" moveup="vr" moveright="vot_2" alt="">
+                    <span>Comissão de Frente</span>
+                    </button>
+                    <button class="option" >
+                    <img id="vot_2" src="media/webmedia/icon_arrow2.png" moveup="vr" moveleft="vot_1" moveright="vot_3" alt="">
+                    <span>Abre-alas</span>
+                    </button>
+                    <button class="option" >
+                    <img id="vot_3" src="media/webmedia/icon_arrow3.png" moveup="vr" moveleft="vot_2" alt="">
+                    <span>Bateria</span>
+                    </button>
+                </div>
+                </div>
         </div>
     
         <script>
+            var video_timer = 0;
             window.addEventListener('message', receiveFrameMessage);
+            window.addEventListener("message", (event) => {
+                console.log("Tempo atual recebido:", event.data.tempo);  
+                if (event.data.tempo >= 60 && video_timer == 0)
+                {
+                    startVote();
+                    video_timer +=1;
+                }
+
+            });
+
             document.addEventListener('keydown', (e) => {navigate(e.key)});
 
             function receiveFrameMessage(e) {
-                let m = JSON.parse(e.data);
-                if (m.type == 'keydown') {
-                    document.dispatchEvent(new KeyboardEvent('keydown', {key: m.key}));
+                if(typeof e.data != 'object'){
+                    let m = JSON.parse(e.data);
+                    if (m.type == 'keydown') {
+                        document.dispatchEvent(new KeyboardEvent('keydown', {key: m.key}));
+                    }
                 }
             }
             
@@ -160,12 +260,21 @@
             $('#cmppopup').hide();
             $('#vr').addClass('focused');
 
+            $('#votapopup').hide();
+
+            function startVote() {
+                $('#votapopup').show();
+                $('#vrpopup').hide();
+                $('#cmppopup').hide();           
+            }
+
+
             function openVRPop() {
                 $('#logos').hide();
                 $('#vrpopup').show();
                 $('#cmppopup').hide();
                 $('#vr').removeClass('focused');
-                $('#vr-conn').addClass('focused');
+                $('#vr-conn').addClass('focused');                
             }
 
             function openCMPPop() {
@@ -193,10 +302,9 @@
                 $('#cmp-back').removeClass('focused');
                 $('#cmp').addClass('focused');
             }
-
+            
             var MSG_COUNT = 0;
             var handle_vr = "";
-            var handle_companion = [];
             var ws = new WebSocket("ws://localhost:8085");
             ws.onopen = function () {
                 console.log("Connection opened...");
@@ -212,8 +320,6 @@
                 console.log(JSON.stringify(msg, undefined, 2));
                 if(msg.message.deviceClass == "guarana")
                     handle_vr = msg.handle;
-                else if(msg.message.deviceClass == "companion")
-                    handle_companion.push(msg.handle);
                 MSG_COUNT += 1;
             }
             
@@ -279,39 +385,10 @@
                 });
             }
 
-
             function btnCMPConn() {
                 // acessa rota do CCWS para pegar dispositivos conectados na classe companion
                 // conectar nos websockets recebidos
                 // { type: 'vote', buttons: [{ imagem, url}} ]} -- combinar com Rodrigo os formato
-
-                function wait(ms) {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                }
-                
-                function SendConfigManual(ws, config) {
-                    ws.send(JSON.stringify(config));
-                }
-                function SendDeviceMessage(ws, form) {
-                    console.log(handle_companion);
-                    // Enviar mensagem para todos os dispositivos companion conectados
-                    if(!handle_companion || handle_companion.length === 0) {
-                        alert("Nenhum dispositivo companion encontrado");
-                        return;
-                    }
-                    handle_companion.forEach(function(h) {
-                        try {
-                            ws.send(JSON.stringify({
-                                service: 'remotedevice',
-                                handle: h,
-                                message: form
-                            }));
-                            console.log("Device Message Sent to", h);
-                        } catch (err) {
-                            console.error("Failed to send to", h, err);
-                        }
-                    });
-                }                
             }
 
             // pegar os tempos do video e chamar as funções para tocar efeitos sensoriais e para abrir os popups de votação
