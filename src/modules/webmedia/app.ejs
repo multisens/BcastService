@@ -125,7 +125,7 @@
         color: white;
         font-size: 3vw;
         font-weight: 700;
-        text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+        text-shadow: 4px 4px 6px #000, -4px -4px 6px #000;
         -webkit-text-stroke: 1px black;
         margin: 0;
       }
@@ -136,7 +136,7 @@
         z-index: 1;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 2vw;
+        gap: 1vw;
         justify-items: center;
       }
       .vota .option {
@@ -151,7 +151,8 @@
         color: white;
         font-weight: bold;
         font-size: 2vw;
-        text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+        text-align: left;
+        text-shadow: 4px 4px 6px #000, -4px -4px 6px #000;
         -webkit-text-stroke: 1px black;
       }
       .vota .option img {
@@ -213,16 +214,16 @@
         <h2 class="title">Escolha do Replay</h2>
         <div class="options">
           <button class="option" type="button">
-            <img id="vot_1" src="media/webmedia/icon_arrow1.png" moveup="vr" moveleft="vot_3" moveright="vot_2" alt="" select="btnVote(0)" />
+            <img id="vot_1" src="media/webmedia/icon_arrow1.png" alt="" select="btnVote(0)" />
             <span>Comissão de Frente</span>
           </button>
           <button class="option" type="button">
-            <img id="vot_2" src="media/webmedia/icon_arrow2.png" moveup="vr" moveleft="vot_1" moveright="vot_3" alt="" select="btnVote(1)" />
+            <img id="vot_2" src="media/webmedia/icon_arrow2.png" alt="" select="btnVote(1)" />
             <span>Abre-alas</span>
           </button>
           <button class="option" type="button">
-            <img id="vot_3" src="media/webmedia/icon_arrow3.png" moveup="vr" moveleft="vot_2" moveright="vot_1" alt="" select="btnVote(2)" />
-            <span>Bateria</span>
+            <img id="vot_3" src="media/webmedia/icon_arrow3.png" alt="" select="btnVote(2)" />
+            <span>Mestre Sala e <br>Porta Bandeira</span>
           </button>
         </div>
       </div>
@@ -233,26 +234,24 @@
       // Navegação e mensagens
       // --------------------------
       let video_timer = 0;
+      let timer_vote = 0;
 
       window.addEventListener('message', receiveFrameMessage);
       document.addEventListener('keydown', (e) => {
         navigate(e.key);
       });
 
-      function receiveFrameMessage(e) {
-        try {
-          // Integra: keydown forwarding + tempo de vídeo
-          if (typeof e.data === 'object' && e.data !== null) {
-            if (typeof e.data.time === 'number') {
-              console.log('Tempo atual recebido:', e.data.time);
-              if (e.data.time >= 60 && video_timer === 0) {
+      document.addEventListener('timeupdate', (e) => {
+        console.log('Tempo transmissão:' + e.detail);
+        if (e.detail >= 60 && video_timer == 0) {
                 startVote();
                 video_timer += 1;
+                timer_vote = 0;
               }
-            }
-            return;
-          }
+      });
 
+      function receiveFrameMessage(e) {
+        try {
           // Algumas integrações enviam string JSON
           const m = JSON.parse(e.data);
           if (m && m.type === 'keydown' && m.key) {
@@ -262,6 +261,18 @@
           // Silencia erros de parse
         }
       }
+        setInterval(() => {
+          if(video_timer == 1)
+          {
+            if(timer_vote >= 60)
+            {
+                stopVote();
+                video_timer += 1;
+            }
+            else
+            { timer_vote +=1; }
+          }
+        }, 1000);
 
       // Estado inicial da UI
       $('#logos').show();
@@ -272,11 +283,9 @@
 
       function startVote() {
         $('#votapopup').show();
-        $('#vrpopup').hide();
-        $('#cmppopup').hide();
-        // foca primeira opção
-        $('#vr').removeClass('focused');
-        $('#vot_1').addClass('focused');
+      }
+      function stopVote() {
+        $('#votapopup').hide();
       }
 
       function openVRPop() {
@@ -322,17 +331,45 @@
       let handle_companion = [];
       let companionDevices = []; // lista com os dispositivos companion obtidos do CCWS
       let companionSockets = []; // array de { url, socket }
+      let ws;
 
-      const ws = new WebSocket('ws://localhost:8085');
-      ws.onopen = function () {
-        console.log('Connection opened...');
-      };
-      ws.onmessage = ReceiveDeviceMessage;
-      ws.onclose = function () {
-        console.log('Connection closed...');
-        MSG_COUNT = 0;
-      };
+      async function getNCL360device() {
+        const url = 'http://localhost:44642/tv3/remote-device/devices/guarana';
+        try {
+          const resp = await fetch(url, { method: 'GET' });
+          if (!resp.ok) {
+            console.error('Failed to fetch companion devices', resp.status, resp.statusText);
+            return [];
+          }
+          const data = await resp.json();
+          console.log("Ultimo device NCL360 ", data.devices[data.devices.length - 1].handle );
 
+          handle_device_NCL360 = data.devices[data.devices.length - 1].handle;
+          handle_vr = handle_device_NCL360;
+          const resp_1 = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle_device_NCL360}`);
+          if (!resp_1.ok) return { handle: h, urls: [] };
+          const info = await resp_1.json();
+
+          console.log("Url device NCL360 ", info );
+
+          ws = new WebSocket('ws://localhost:' + info.url.slice(-4));
+          
+          ws.onopen = function () {
+            console.log('Connection opened...');
+          };
+          ws.onmessage = ReceiveDeviceMessage;
+          ws.onclose = function () {
+            console.log('Connection closed...');
+            MSG_COUNT = 0;
+          };
+        } catch (err) {
+          console.error('Error fetching NCL360 devices', err);
+          return [];
+        }
+      }
+      getNCL360device()
+      
+      
       function ReceiveDeviceMessage(evt) {
         try {
           const msg = JSON.parse(evt.data);
@@ -340,6 +377,7 @@
 
           if (msg && msg.message && msg.message.deviceClass === 'guarana') {
             handle_vr = msg.handle;
+            con
           } else if (msg && msg.message && msg.message.deviceClass === 'companion') {
             // aceita tanto string quanto objeto
             if (!handle_companion.includes(msg.handle)) handle_companion.push(msg.handle);
@@ -523,14 +561,18 @@
           type: 'application/x-ncl360',
         });
 
-        // Dispara presentation.start
-        SendDeviceMessage(ws, handle_vr, {
-          nodeId: 'm1',
-          label: '',
-          appId: '100',
-          eventType: 'presentation',
-          action: 'start',
-        });
+        setTimeout(() => {
+          // Dispara presentation.start
+          SendDeviceMessage(ws, handle_vr, {
+            nodeId: 'm1',
+            label: '',
+            appId: '100',
+            eventType: 'presentation',
+            action: 'start',
+          });
+        }, 10000);
+
+        
       }
 
       async function btnCMPConn() {
