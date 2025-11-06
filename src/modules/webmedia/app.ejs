@@ -172,8 +172,8 @@
       <!-- Logos -->
       <div id="logos" class="popup" style="background-color: transparent">
         <div class="header">
-          <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" movedown="vot_1" select="openVRPop" />
-          <img id="cmp" src="media/webmedia/companion-logo.png" moveleft="vr" movedown="vot_1" select="openCMPPop" />
+          <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" select="openVRPop" />
+          <img id="cmp" src="media/webmedia/companion-logo.png" moveleft="vr" select="openCMPPop" />
         </div>
       </div>
 
@@ -292,7 +292,6 @@
         $('#logos').hide();
         $('#vrpopup').show();
         $('#cmppopup').hide();
-        $('#votapopup').hide();
         $('#vr').removeClass('focused');
         $('#vr-conn').addClass('focused');
       }
@@ -301,7 +300,6 @@
         $('#logos').hide();
         $('#vrpopup').hide();
         $('#cmppopup').show();
-        $('#votapopup').hide();
         $('#cmp').removeClass('focused');
         $('#cmp-conn').addClass('focused');
       }
@@ -310,7 +308,6 @@
         $('#logos').show();
         $('#vrpopup').hide();
         $('#cmppopup').hide();
-        $('#votapopup').hide();
       }
       function btnVRBack() {
         btnBack();
@@ -561,18 +558,14 @@
           type: 'application/x-ncl360',
         });
 
-        setTimeout(() => {
-          // Dispara presentation.start
-          SendDeviceMessage(ws, handle_vr, {
-            nodeId: 'm1',
-            label: '',
-            appId: '100',
-            eventType: 'presentation',
-            action: 'start',
-          });
-        }, 10000);
-
-        
+        // Dispara presentation.start
+        SendDeviceMessage(ws, handle_vr, {
+          nodeId: 'm1',
+          label: '',
+          appId: '100',
+          eventType: 'presentation',
+          action: 'start',
+        });
       }
 
       async function btnCMPConn() {
