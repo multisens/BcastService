@@ -108,7 +108,7 @@
         font-family: sans-serif;
         font-size: 1.2vw;
         box-sizing: border-box;
-        z-index: 4;
+        z-index: 2;
       }
       .vota .bg {
         position: absolute;
@@ -172,7 +172,7 @@
       <!-- Logos -->
       <div id="logos" class="popup" style="background-color: transparent">
         <div class="header">
-          <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" select="openVRPop" />
+          <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" select="openVRPop"/>
           <img id="cmp" src="media/webmedia/companion-logo.png" moveleft="vr" select="openCMPPop" />
         </div>
       </div>
@@ -211,21 +211,26 @@
       <!-- Vote Popup -->
       <div id="votapopup" class="vota">
         <img class="bg" src="media/webmedia/popup-background.png" alt="fundo" />
-        <h2 class="title">Escolha do Replay</h2>
-        <div class="options">
+        <h2  id="txt_vitoria" class="title">Escolha do Replay</h2>
+        <div id="votacao" class="options">
           <button class="option" type="button">
-            <img id="vot_1" src="media/webmedia/icon_arrow1.png" alt="" select="btnVote(0)" />
+            <img id="vot_1" src="media/webmedia/icon_arrow1.png" alt="" />
             <span>Comissão de Frente</span>
           </button>
           <button class="option" type="button">
-            <img id="vot_2" src="media/webmedia/icon_arrow2.png" alt="" select="btnVote(1)" />
+            <img id="vot_2" src="media/webmedia/icon_arrow2.png" alt="" />
             <span>Abre-alas</span>
           </button>
           <button class="option" type="button">
-            <img id="vot_3" src="media/webmedia/icon_arrow3.png" alt="" select="btnVote(2)" />
+            <img id="vot_3" src="media/webmedia/icon_arrow3.png" alt="" />
             <span>Mestre Sala e <br>Porta Bandeira</span>
           </button>
         </div>
+
+        <div>
+            <span></span>
+        </div>
+
       </div>
     </div>
 
@@ -243,8 +248,8 @@
 
       document.addEventListener('timeupdate', (e) => {
         console.log('Tempo transmissão:' + e.detail);
-        if (e.detail >= 60 && video_timer == 0) {
-                startVote();
+        if (e.detail >= 10 && video_timer == 0) {
+                declareVencedor();
                 video_timer += 1;
                 timer_vote = 0;
               }
@@ -279,10 +284,12 @@
       $('#vrpopup').hide();
       $('#cmppopup').hide();
       $('#votapopup').hide();
+      $('#votacao').hide();
       $('#vr').addClass('focused');
 
       function startVote() {
         $('#votapopup').show();
+        $('#votacao').show();
       }
       function stopVote() {
         $('#votapopup').hide();
@@ -294,6 +301,8 @@
         $('#cmppopup').hide();
         $('#vr').removeClass('focused');
         $('#vr-conn').addClass('focused');
+
+        getNCL360device()
       }
 
       function openCMPPop() {
@@ -328,7 +337,7 @@
       let handle_companion = [];
       let companionDevices = []; // lista com os dispositivos companion obtidos do CCWS
       let companionSockets = []; // array de { url, socket }
-      let ws;
+      let ws_VR;
 
       async function getNCL360device() {
         const url = 'http://localhost:44642/tv3/remote-device/devices/guarana';
@@ -349,13 +358,13 @@
 
           console.log("Url device NCL360 ", info );
 
-          ws = new WebSocket('ws://localhost:' + info.url.slice(-4));
+          ws_VR = new WebSocket('ws://localhost:' + info.url.slice(-4));
           
-          ws.onopen = function () {
+          ws_VR.onopen = function () {
             console.log('Connection opened...');
           };
-          ws.onmessage = ReceiveDeviceMessage;
-          ws.onclose = function () {
+          ws_VR.onmessage = ReceiveDeviceMessage;
+          ws_VR.onclose = function () {
             console.log('Connection closed...');
             MSG_COUNT = 0;
           };
@@ -364,7 +373,6 @@
           return [];
         }
       }
-      getNCL360device()
       
       
       function ReceiveDeviceMessage(evt) {
@@ -532,18 +540,18 @@
           }
         });
       }
-
+      
       // --------------------------
       // Ações de botões
       // --------------------------
       async function btnVRConn() {
         // Configurações iniciais
-        SendConfigManual(ws, {
+        SendConfigManual(ws_VR, {
           service: 'appfiles',
           appid: '100',
           path: 'D:/GitHub/Guarana-Testing/WebMedia',
         });
-        SendConfigManual(ws, {
+        SendConfigManual(ws_VR, {
           service: 'userapi',
           path: 'D:/GitHub/Guarana-Testing/UserAPI',
           currentUser: 'f626b4f2-d989-4fbf-9645-f830fd12b348',
@@ -551,15 +559,15 @@
         });
 
         // Carrega cena
-        SendDeviceMessage(ws, handle_vr, {
+        SendDeviceMessage(ws_VR, handle_vr, {
           nodeId: 'm1',
           nodeSrc: 'cena.ncl360',
           appId: '100',
           type: 'application/x-ncl360',
         });
-
+        
         // Dispara presentation.start
-        SendDeviceMessage(ws, handle_vr, {
+        SendDeviceMessage(ws_VR, handle_vr, {
           nodeId: 'm1',
           label: '',
           appId: '100',
@@ -588,6 +596,16 @@
         console.log('Voto enviado:', option);
         // Opcional: esconder popup após voto
         // $('#votapopup').hide();
+      }
+
+      function declareVencedor() {
+        $('#votapopup').show();
+        $('#votacao').hide();
+
+        const mySpan = document.getElementById("txt_vitoria");
+        const escola1 = "Grande Rio";
+        const escola2 = "Imperatriz Leopoldinense";
+        mySpan.innerText = '1º colocado: '+escola1+' ! 2º colocado: '+escola2+' !'; 
       }
 
       // Expondo funções globais para o navigation.js acionar via atributo `select`.
