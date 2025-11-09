@@ -51,37 +51,40 @@
       }
 
       /* Grid dos cards */
-      .card-grid {
+      .replay-grid {
         display: grid;
         /* Duas colunas de tamanho igual, com espaço entre elas */
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 1.5rem; /* Espaçamento entre os cards */
       }
 
       /* Estilo do card individual */
-      .card-link {
+      .replay-link {
         display: flex;
         flex-direction: column;
         align-items: center;
 
         background-color: var(--cor-card);
         border-radius: 0.75rem; /* 12px */
-        box-shadow: 0 10px 15px -3px var(--cor-sombra),  0 4px 6px -2px var(--cor-sombra);
+        box-shadow: 0 10px 15px -3px var(--cor-sombra),
+          0 4px 6px -2px var(--cor-sombra);
         padding: 1.5rem;
         text-decoration: none;
 
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         border: 2px solid transparent;
+
+        cursor: pointer;
       }
 
-      .card-link:hover {
+      .replay-link:hover {
         transform: translateY(-5px);
         box-shadow: 0 20px 25px -5px var(--cor-sombra),
           0 10px 10px -5px var(--cor-sombra);
         border-color: var(--cor-borda-hover);
       }
 
-      .card-title {
+      .replay-link-title {
         font-size: 1.25rem;
         font-weight: 600;
         color: var(--cor-texto);
@@ -89,7 +92,7 @@
         margin-bottom: 1rem;
       }
 
-      .card-image {
+      .replay-link-color {
         width: 100%;
         max-width: 160px;
         height: auto;
@@ -97,86 +100,59 @@
         object-fit: cover;
         border-radius: 0.5rem;
         background-color: #eee;
-    }
+      }
 
       /* Para telas menores (celulares), uma coluna só */
       @media (max-width: 600px) {
-        .card-grid {
+        .replay-grid {
           grid-template-columns: 1fr;
         }
         h1 {
           font-size: 1.5rem;
         }
-        .card-link {
+        .replay-link {
           padding: 1.5rem 1rem;
         }
-        .card-title {
-            font-size: 1.1rem;
+        .replay-link-title {
+          font-size: 1.1rem;
         }
-        .card-image {
-            max-width: 120px;
+        .replay-link-color {
+          max-width: 120px;
         }
-
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Escolha um Replay</h1>
+      <h1>Qual parte você gostaria de rever?</h1>
 
-      <div class="card-grid">
-        <!-- Linha 1 -->
-        <a href="/webmedia/companion/replay/beijaflor" class="card-link">
-          <span class="card-title">Beija Flor</span>
+      <div
+        class="replay-grid"
+      >
+        <a class="replay-link" href="/webmedia/companion/replay/comissao">
+          <span class="replay-link-title">Comissão de Frente</span>
           <img
-            class="card-image"
-            src="/media/webmedia/flag-beijaflor.jpg"
-            alt="Logo da Beija Flor"
+            class="vote-button-image"
+            src="/media/webmedia/icon_arrow1.png"
+            alt="Red Button"
           />
         </a>
-        <a href="/webmedia/companion/replay/granderio" class="card-link">
-          <span class="card-title">Grande Rio</span>
+        <a class="replay-link" href="/webmedia/companion/replay/abrealas">
+          <span class="replay-link-title">Abre-alas</span>
           <img
-            class="card-image"
-            src="/media/webmedia/flag-granderio.jpg"
-            alt="Logo da Grande Rio"
+            class="vote-button-image"
+            src="/media/webmedia/icon_arrow2.png"
+            alt="Green Button"
           />
         </a>
-
-        <a href="/webmedia/companion/replay/imperatriz" class="card-link">
-          <span class="card-title">Imperatriz</span>
+        <a class="replay-link" href="/webmedia/companion/replay/mestresala">
+          <span class="replay-link-title">Mestre Sala e Porta Bandeira</span>
           <img
-            class="card-image"
-            src="/media/webmedia/flag-imperatriz.jpg"
-            alt="Logo da Imperatriz"
+            class="vote-button-image"
+            src="/media/webmedia/icon_arrow3.png"
+            alt="Blue Button"
           />
         </a>
-        <a href="/webmedia/companion/replay/mangueira" class="card-link">
-          <span class="card-title">Mangueira</span>
-          <img
-            class="card-image"
-            src="/media/webmedia/flag-mangueira.jpg"
-            alt="Logo da Mangueira"
-          />
-        </a>
-
-        <a href="/webmedia/companion/replay/portela" class="card-link">
-          <span class="card-title">Portela</span>
-          <img
-            class="card-image"
-            src="/media/webmedia/flag-portela.jpg"
-            alt="Logo da Portela"
-          />
-        </a>
-        <a href="/webmedia/companion/replay/viradouro" class="card-link">
-          <span class="card-title">Viradouro</span>
-          <img
-            class="card-image"
-            src="/media/webmedia/flag-viradouro.jpg"
-            alt="Logo da Viradouro"
-          />
-        </a>
-
       </div>
     </div>
   </body>

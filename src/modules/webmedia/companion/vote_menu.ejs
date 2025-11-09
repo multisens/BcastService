@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Replays - Carnaval</title>
+    <style>
+      :root {
+        --cor-fundo: #f0f4f8;
+        --cor-card: #ffffff;
+        --cor-texto: #1f2937;
+        --cor-sombra: rgba(0, 0, 0, 0.1);
+        --cor-borda-hover: #4a90e2;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: var(--cor-fundo);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        box-sizing: border-box;
+      }
+
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 1.5rem 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--cor-texto);
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 2rem;
+      }
+
+      /* Grid dos cards */
+      .vote-grid {
+        display: grid;
+        /* Duas colunas de tamanho igual, com espaço entre elas */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem; /* Espaçamento entre os cards */
+      }
+
+      /* Estilo do card individual */
+      .vote-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        background-color: var(--cor-card);
+        border-radius: 0.75rem; /* 12px */
+        box-shadow: 0 10px 15px -3px var(--cor-sombra),
+          0 4px 6px -2px var(--cor-sombra);
+        padding: 1.5rem;
+        text-decoration: none;
+
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        border: 2px solid transparent;
+        
+        cursor: pointer;
+      }
+
+      .vote-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px var(--cor-sombra),
+          0 10px 10px -5px var(--cor-sombra);
+        border-color: var(--cor-borda-hover);
+      }
+
+      .vote-button-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--cor-texto);
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+
+      .vote-button-image {
+        width: 100%;
+        max-width: 160px;
+        height: auto;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        background-color: #eee;
+      }
+
+      /* Para telas menores (celulares), uma coluna só */
+      @media (max-width: 600px) {
+        .vote-grid {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+        .vote-button {
+          padding: 1.5rem 1rem;
+        }
+        .vote-button-title {
+          font-size: 1.1rem;
+        }
+        .vote-button-image {
+          max-width: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Vote na sua escola de samba favorita!</h1>
+
+      <div class="vote-grid" id="vote-container">
+        <!-- Linha 1 -->
+        <button class="vote-button" data-choice="beijaflor">
+          <span class="vote-button-title">Beija Flor</span>
+          <img
+            class="vote-button-image"
+            src="/media/webmedia/flag-beijaflor.jpg"
+            alt="Logo da Beija Flor"
+          />
+        </button>
+        <button class="vote-button" data-choice="granderio">
+          <span class="vote-button-title">Grande Rio</span>
+          <img
+            class="vote-button-image"
+            src="/media/webmedia/flag-granderio.jpg"
+            alt="Logo da Grande Rio"
+          />
+        </button>
+
+        <button class="vote-button" data-choice="imperatriz">
+          <span class="vote-button-title">Imperatriz</span>
+          <img
+            class="vote-button-image"
+            src="/media/webmedia/flag-imperatriz.jpg"
+            alt="Logo da Imperatriz"
+          />
+        </button>
+        <button class="vote-button" data-choice="mangueira">
+          <span class="vote-button-title">Mangueira</span>
+          <img
+            class="vote-button-image"
+            src="/media/webmedia/flag-mangueira.jpg"
+            alt="Logo da Mangueira"
+          />
+        </button>
+
+        <button class="vote-button" data-choice="portela">
+          <span class="vote-button-title">Portela</span>
+          <img
+            class="vote-button-image"
+            src="/media/webmedia/flag-portela.jpg"
+            alt="Logo da Portela"
+          />
+        </button>
+        <button class="vote-button" data-choice="viradouro">
+          <span class="vote-button-title">Viradouro</span>
+          <img
+            class="vote-button-image"
+            src="/media/webmedia/flag-viradouro.jpg"
+            alt="Logo da Viradouro"
+          />
+        </button>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const WRAPPER_ORIGIN = "*";
+
+        // --- Referências da DOM ---
+        const voteContainer = document.getElementById("vote-container");
+        const log = document.getElementById("message-log");
+
+        if (!voteContainer) console.warn("No vote container found")
+
+        function sendToWrapper(payload) {
+          // Monta a mensagem no formato padrão
+          const message = {
+            type: "iframe-message",
+            payload: payload,
+          };
+
+          // Envia a mensagem para o 'window.parent' (o wrapper)
+          window.parent.postMessage(message, WRAPPER_ORIGIN);
+          console.log("Iframe: Enviando para o Wrapper:", payload);
+        }
+
+        voteContainer.addEventListener("click", (event) => {
+          const clickedButton = event.target.closest(".vote-button");
+
+          if (!clickedButton) {
+            return;
+          }
+
+          const choiceId = clickedButton.dataset.choice;
+
+          const payload = {
+            type: "vote",
+            choice: choiceId,
+          };
+
+          sendToWrapper(payload);
+        });
+      });
+    </script>
+  </body>
+</html>
