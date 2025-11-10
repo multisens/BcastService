@@ -335,8 +335,10 @@
       let MSG_COUNT = 0;
       let handle_vr = '';
       let handle_companion = [];
-      let companionDevices = []; // lista com os dispositivos companion obtidos do CCWS
-      let companionSockets = []; // array de { url, socket }
+  let companionDevices = []; // lista com os dispositivos companion obtidos do CCWS
+  let companionSockets = []; // array de { url, socket }
+  // buffer simples para armazenar mensagens recebidas dos sockets diretos
+  let companionMessages = []; // { url, raw, parsed?, timestamp }
       let ws_VR;
 
       async function getNCL360device() {
@@ -477,10 +479,25 @@
           urls.forEach((url) => {
             try {
               const s = new WebSocket(url);
-              s.onopen = () => console.log('Socket open', url);
-              s.onmessage = (ev) => console.log('Socket message', url, ev.data);
-              s.onclose = () => console.log('Socket closed', url);
-              s.onerror = (err) => console.error('Socket error', url, err);
+
+              s.addEventListener('open', () => console.log('Socket open', url));
+
+              // coleta mensagens recebidas no buffer global companionMessages
+              s.addEventListener('message', (ev) => {
+                const raw = ev.data;
+                let parsed = null;
+                try {
+                  if (typeof raw === 'string') parsed = JSON.parse(raw);
+                } catch (_) {
+                  // mensagem não é JSON — mantemos raw
+                }
+                companionMessages.push({ url, raw, parsed, timestamp: Date.now() });
+                console.log('Socket message', url, raw);
+              });
+
+              s.addEventListener('close', () => console.log('Socket closed', url));
+              s.addEventListener('error', (err) => console.error('Socket error', url, err));
+
               companionSockets.push({ url, socket: s });
             } catch (err) {
               console.error('Failed to open socket for', url, err);
@@ -539,6 +556,104 @@
             console.error('Direct socket send failed', entry.url, err);
           }
         });
+      }
+
+      // Envia a mensagem de abertura de URL para UM handle específico, usando apenas
+      async function SendOpenUrlCommand(handle, url) {
+        if (!handle || !url) {
+          console.error('SendOpenUrlCommand: handle e url são obrigatórios');
+          return { ok: false, error: 'missing_handle_or_url' };
+        }
+
+        // tenta casar diretamente com companionSockets usando comparações flexíveis
+        function urlsMatch(a, b) {
+          if (!a || !b) return false;
+          if (a === b) return true;
+          try {
+            const pa = new URL(a).href;
+            const pb = new URL(b).href;
+            if (pa === pb) return true;
+            if (pa.endsWith(pb) || pb.endsWith(pa)) return true;
+            if (pa.includes(pb) || pb.includes(pa)) return true;
+          } catch (_) {
+            if (a.endsWith(b) || b.endsWith(a) || a.includes(b) || b.includes(a)) return true;
+          }
+          return false;
+        }
+
+        let foundEntry = null;
+        // 1) tentar encontrar por igualdade/substring com a url passada
+        for (const entry of companionSockets) {
+          if (!entry || !entry.url) continue;
+          if (urlsMatch(entry.url, url)) { foundEntry = entry; break; }
+        }
+
+        // 2) se não encontrou, buscar URLs do device no CCWS e tentar casar
+        if (!foundEntry) {
+          try {
+            const resp = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle}`);
+            if (resp.ok) {
+              const info = await resp.json();
+              const candidateUrls = [];
+              if (typeof info === 'string') candidateUrls.push(info);
+              if (Array.isArray(info?.urls)) candidateUrls.push(...info.urls);
+              if (typeof info?.url === 'string') candidateUrls.push(info.url);
+              if (Array.isArray(info?.devices)) info.devices.forEach((d) => d?.url && candidateUrls.push(d.url));
+              Object.values(info || {}).forEach((v) => {
+                if (typeof v === 'string') candidateUrls.push(v);
+                if (Array.isArray(v)) v.forEach((x) => typeof x === 'string' && candidateUrls.push(x));
+              });
+
+              for (const cu of candidateUrls) {
+                for (const entry of companionSockets) {
+                  if (!entry || !entry.url) continue;
+                  if (urlsMatch(entry.url, cu)) { foundEntry = entry; break; }
+                }
+                if (foundEntry) break;
+              }
+            }
+          } catch (err) {
+            console.warn('SendOpenUrlCommand: erro ao buscar device info', handle, err);
+          }
+        }
+
+        if (!foundEntry || !foundEntry.socket) {
+          console.error('SendOpenUrlCommand: nenhum socket direto encontrado para handle', handle);
+          return { ok: false, error: 'no_direct_socket_for_handle' };
+        }
+
+        const sock = foundEntry.socket;
+        if (sock.readyState !== WebSocket.OPEN) {
+          console.error('SendOpenUrlCommand: socket não está aberto', foundEntry.url, sock.readyState);
+          return { ok: false, error: 'socket_not_open', state: sock.readyState };
+        }
+
+        const message = {
+          service: 'remotedevice',
+          handle: handle,
+          message: {
+            deviceClass: 'companion',
+            url: url,
+          },
+        };
+
+        try {
+          sock.send(JSON.stringify(message));
+          console.log('SendOpenUrlCommand: enviado para handle', handle, 'via', foundEntry.url);
+          return { ok: true };
+        } catch (err) {
+          console.error('SendOpenUrlCommand: falha ao enviar', err);
+          return { ok: false, error: String(err) };
+        }
+      }
+      
+      // Helpers para acessar/limpar as mensagens coletadas dos sockets diretos
+      function getCollectedCompanionMessages() {
+        return companionMessages.slice(); // devolve cópia
+      }
+
+      function clearCollectedCompanionMessages() {
+        companionMessages.length = 0;
       }
       
       // --------------------------
@@ -616,6 +731,9 @@
       window.btnCMPConn = btnCMPConn;
       window.btnCMPBack = btnCMPBack;
       window.btnVote = btnVote;
+  // expose message buffer helpers
+  window.getCollectedCompanionMessages = getCollectedCompanionMessages;
+  window.clearCollectedCompanionMessages = clearCollectedCompanionMessages;
     </script>
   </body>
 </html>
