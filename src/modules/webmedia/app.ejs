@@ -376,7 +376,6 @@
         }
       }
       
-      
       function ReceiveDeviceMessage(evt) {
         try {
           const msg = JSON.parse(evt.data);
@@ -677,7 +676,7 @@
         //SendDeviceMessage(ws_VR, handle_vr, );
         ws_VR.send( JSON.stringify({
           nodeId: 'm1',
-          nodeSrc: 'http://localhost:8081/media/webmedia/cena.ncl360',
+          nodeSrc: 'http://192.168.68.100:8081/media/webmedia/cena.ncl360',
           appId: '100',
           type: 'application/x-ncl360',
         }));
