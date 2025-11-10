@@ -233,6 +233,7 @@
 
       </div>
     </div>
+    <script src="js/sepe.js"></script>
 
     <script>
       // --------------------------
@@ -663,11 +664,11 @@
         SendConfigManual(ws_VR, {
           service: 'appfiles',
           appid: '100',
-          path: 'D:/GitHub/GingaDistrib/BcastService/public/media/webmedia',
+          path: '/home/dell-g15-1/Documentos/TV30/bcast/public/media/webmedia',
         });
         SendConfigManual(ws_VR, {
           service: 'userapi',
-          path: 'D:/GitHub/GingaDistrib/user-files',
+          path: '/home/dell-g15-1/Documentos/TV30/ginga/user-files',
           currentUser: 'c3167a18-5dc5',
           currentService: 'midiacom',
         });
@@ -737,6 +738,28 @@
   // expose message buffer helpers
   window.getCollectedCompanionMessages = getCollectedCompanionMessages;
   window.clearCollectedCompanionMessages = clearCollectedCompanionMessages;
+
+  async function execute() {
+            const sepe = await findSepe();
+            if (!sepe) {
+                console.error("No SEPE found, exiting.");
+                return;
+            }
+
+            console.log("Scheduling light effects...");
+            document.addEventListener("stream_event", (event) => {
+                const { name, color } = JSON.parse(event.detail);
+                console.log("UFF: event action => ", JSON.parse(event.detail))
+                playLightEffect(sepe, name, color)
+            })
+
+            document.addEventListener('beforeunload', async (e) => {
+                console.log("Turning effects off before quitting page.")
+                await playLightEffect(sepe, "stop", [0, 0, 0]);
+            });
+        }
+
+        execute();
     </script>
   </body>
 </html>
