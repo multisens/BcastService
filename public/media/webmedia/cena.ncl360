@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<ncl360 id="cena">
+    <head>
+        <!-- regioes customizadas -->
+		<region id="botao_3" polar="0d" azimuthal="-25d" width="2m" height="2m" radius="6m" pin="environment"/>
+		<region id="botao_1" polar="0d" azimuthal="0d" width="2m" height="2m" radius="6m" pin="environment"/>
+		<region id="botao_2" polar="0d" azimuthal="25d" width="2m" height="2m" radius="6m" pin="environment"/>
+		
+		<region id="vota_1" polar="0d" azimuthal="0d" width="2m" height="2m" radius="6m" pin="environment"/>
+		<region id="vota_2" polar="0d" azimuthal="25d" width="2m" height="2m" radius="6m" pin="environment"/>
+		<region id="vota_1_1" polar="0d" azimuthal="0d" width="2m" height="2m" radius="6m" pin="environment"/>
+		<region id="vota_2_1" polar="0d" azimuthal="25d" width="2m" height="2m" radius="6m" pin="environment"/>
+        
+        <!-- caracteristicas de apresentacao -->
+        <descriptor id="dbeijflor" region="default.sky" projection="equirectangular" volume="1" dur = "180"/>
+        <descriptor id="dgranderio" region="default.sky" projection="equirectangular" volume="1" dur = "180"/>
+        <descriptor id="dhub" region="default.sky" projection="equirectangular" volume="1" dur = "600" />
+
+		<descriptor id="dbot1" region="botao_1"/>
+		<descriptor id="dbot2" region="botao_2"/>
+		<descriptor id="dbot3" region="botao_3"/>
+
+		<descriptor id="dvot1" region="vota_1"/>
+		<descriptor id="dvot2" region="vota_2"/>
+		<descriptor id="dvot11" region="vota_1_1"/>
+		<descriptor id="dvot21" region="vota_2_1"/>
+    </head>
+    
+    <body>
+		
+		<port component="hub"/>
+		<port component="botao1"/>
+		<port component="botao2"/>
+		
+        <media id="hub" src="http://localhost:8081/media/webmedia/media/hub.mp4" descriptor="dhub"/>
+
+        <media id="main1" src="http://localhost:8081/media/webmedia/media/imperatriz360.mp4" descriptor="dbeijflor">
+			<area id="scene11" begin="10s" end="180s"/>
+		</media>
+		
+        <media id="main2" src="http://localhost:8081/media/webmedia/media/granderio360.mp4" descriptor="dgranderio">
+			<area id="scene21" begin="10s" end="180s"/>
+		</media>
+
+		<media id="botao1" src="http://localhost:8081/media/webmedia/media/flag-imperatriz.jpg" descriptor="dbot1"/>
+		<media id="botao2" src="http://localhost:8081/media/webmedia/media/bandeira_GrandeRio.jpg" descriptor="dbot2"/>
+		<media id="botao3" src="http://localhost:8081/media/webmedia/media/botao3.png" descriptor="dbot3"/>
+
+		<media id="vota1" src="http://localhost:8081/media/webmedia/media/bf0.png" descriptor="dvot1"/>
+		<media id="vota11" src="http://localhost:8081/media/webmedia/media/bf1.png" descriptor="dvot11"/>
+		<media id="vota2" src="http://localhost:8081/media/webmedia/media/gr0.png" descriptor="dvot2"/>
+		<media id="vota21" src="http://localhost:8081/media/webmedia/media/gr1.png" descriptor="dvot21"/>
+
+		<link>
+			<bind component="botao1" role="onSelection"/>
+			<bind component="hub" role="stop"/>
+			<bind component="main2" role="stop"/>
+			<bind component="main1" role="start"/>
+			<bind component="botao1" role="stop"/>
+			<bind component="botao2" role="stop"/>
+			<bind component="botao3" role="stop"/>
+		</link>
+
+		<link>
+			<bind component="botao2" role="onSelection"/>
+			<bind component="hub" role="stop"/>
+			<bind component="main1" role="stop"/>
+			<bind component="main2" role="start"/>
+			<bind component="botao1" role="stop"/>
+			<bind component="botao2" role="stop"/>
+			<bind component="botao3" role="stop"/>
+		</link>
+
+		<link>
+			<bind component="main1" interface="scene11" role="onEnd"/>
+			<bind component="main1" role="stop"/>
+			<bind component="hub" role="start"/>
+			<bind component="botao2" role="start"/>
+			<bind component="botao3" role="start"/>
+		</link>
+
+		<link>
+			<bind component="main2" interface="scene21" role="onEnd"/>
+			<bind component="main2" role="stop"/>
+			<bind component="hub" role="start"/>
+			<bind component="botao1" role="start"/>
+			<bind component="botao3" role="start"/>
+		</link>
+
+		<link>
+			<bind component="botao3" role="onSelection"/>
+			<bind component="vota1" role="start"/>
+			<bind component="vota2" role="start"/>
+			<bind component="botao1" role="stop"/>
+			<bind component="botao2" role="stop"/>
+			<bind component="botao3" role="stop"/>
+		</link>
+
+		<link>
+			<bind component="vota1" role="onSelection"/>
+			<bind component="vota1" role="stop"/>
+			<bind component="vota11" role="start"/>
+		</link>
+
+		<link>
+			<bind component="vota2" role="onSelection"/>
+			<bind component="vota2" role="stop"/>
+			<bind component="vota21" role="start"/>
+		</link>
+	</body>
+</ncl360>

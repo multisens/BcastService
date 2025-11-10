@@ -248,8 +248,8 @@
 
       document.addEventListener('timeupdate', (e) => {
         console.log('Tempo transmissão:' + e.detail);
-        if (e.detail >= 10 && video_timer == 0) {
-                declareVencedor();
+        if (e.detail >= 60 && video_timer == 0) {
+                startVote();
                 video_timer += 1;
                 timer_vote = 0;
               }
@@ -664,31 +664,35 @@
         SendConfigManual(ws_VR, {
           service: 'appfiles',
           appid: '100',
-          path: 'D:/GitHub/Guarana-Testing/WebMedia',
+          path: 'D:/GitHub/GingaDistrib/BcastService/public/media/webmedia',
         });
         SendConfigManual(ws_VR, {
           service: 'userapi',
-          path: 'D:/GitHub/Guarana-Testing/UserAPI',
-          currentUser: 'f626b4f2-d989-4fbf-9645-f830fd12b348',
+          path: 'D:/GitHub/GingaDistrib/user-files',
+          currentUser: 'c3167a18-5dc5',
           currentService: 'midiacom',
         });
 
         // Carrega cena
-        SendDeviceMessage(ws_VR, handle_vr, {
+        //SendDeviceMessage(ws_VR, handle_vr, );
+        ws_VR.send( JSON.stringify({
           nodeId: 'm1',
-          nodeSrc: 'cena.ncl360',
+          nodeSrc: 'http://localhost:8081/media/webmedia/cena.ncl360',
           appId: '100',
           type: 'application/x-ncl360',
-        });
-        
+        }));
+
+
         // Dispara presentation.start
-        SendDeviceMessage(ws_VR, handle_vr, {
-          nodeId: 'm1',
-          label: '',
-          appId: '100',
-          eventType: 'presentation',
-          action: 'start',
-        });
+        setTimeout(() => {
+          ws_VR.send( JSON.stringify({
+            nodeId: 'm1',
+            label: '',
+            appId: '100',
+            eventType: 'presentation',
+            action: 'start',
+          }));
+        }, 2000);
       }
 
       async function btnCMPConn() {
