@@ -13,7 +13,8 @@ let current_playlist: hlsPlaylist = {
     target_dur: 1,
     segments_dur: '1.001000'
 };
-let max_seg = 4284 - current_playlist.playlist_size;
+// let max_seg = 4284 - current_playlist.playlist_size;
+let max_seg = 3120;
 let broker: MqttClient;
 
 export function setBroker(client: MqttClient) {
