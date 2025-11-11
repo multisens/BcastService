@@ -1,0 +1,177 @@
+{
+    "last_seg": 85,
+    "actions": [
+        {
+            "seg_start": 0,
+            "seg_end": 4,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Azul escuro (00)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ]
+                    }, 
+                    {
+                        "type": "ScentType",
+                        "action": "start",
+                        "intensity": 100
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 5,
+            "seg_end": 12,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Rosa/Roxo (00:05)",
+                        "color": [
+                            218,
+                            30,
+                            214
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 13,
+            "seg_end": 24,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Azul Água (00:13)",
+                        "color": [
+                            0,
+                            65,
+                            255
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 25,
+            "seg_end": 32,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Azul Escuro (00:25)",
+                        "color": [
+                            0,
+                            0,
+                            139
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 33,
+            "seg_end": 41,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Laranja (00:33)",
+                        "color": [
+                            255,
+                            165,
+                            0
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 42,
+            "seg_end": 47,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Branco Azulado (00:42)",
+                        "color": [
+                            160,
+                            160,
+                            255
+                        ]
+                    },
+                    {
+                        "type": "ScentType",
+                        "action": "stop",
+                        "intensity": 0
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 48,
+            "seg_end": 54,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Verde Amarelado (00:48)",
+                        "color": [
+                            173,
+                            255,
+                            47
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 55,
+            "seg_end": 63,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Branco Azulado (00:58)",
+                        "color": [
+                            160,
+                            160,
+                            255
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 64,
+            "seg_end": 74,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Azul Água (01:04)",
+                        "color": [
+                            30,
+                            30,
+                            255
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

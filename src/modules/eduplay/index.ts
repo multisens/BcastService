@@ -8,8 +8,7 @@ import { nanoid } from "nanoid";
 import { ServiceInterface, bam, esg, bald } from '../../types';
 dotenv.config();
 
-
-const HOST_IP = process.env.HOST_IP || "localhost";
+// O HOST_IP foi removido para seguir o padrão UFF (usar this.base_rul)
 
 class eduplay implements ServiceInterface {
   base_rul!: string;
@@ -27,12 +26,16 @@ class eduplay implements ServiceInterface {
     this.router.get('/play/:roomId', this.get_mobile.bind(this));
   }
 
+  // ATUALIZADO: Adicionado publish de 'bald'
   sendSLS(mqtt: MqttClient): void {
     mqtt.publish(`tlm/sls/${this.sid}/esg`, JSON.stringify(this.esg()), { retain : true });
+    mqtt.publish(`tlm/sls/${this.sid}/bald`, JSON.stringify(this.bald()), { retain : true });
   }
 
+  // ATUALIZADO: Adicionado clear de 'bald'
   dispose(mqtt: MqttClient): void {
     mqtt.publish(`tlm/sls/${this.sid}/esg`, '', { retain : true });
+    mqtt.publish(`tlm/sls/${this.sid}/bald`, '', { retain : true });
   }
 
   bam(): bam {
@@ -49,14 +52,19 @@ class eduplay implements ServiceInterface {
         // appDescription: '',
         backgroundColor: '#282828ff',
         foregroundColor: '#c8c8c8ff'
+        // 'initialMediaURLs' não é necessário aqui, pois é um app interativo, não media player
     }
   }
 
+  // ATUALIZADO: URLs usam 'this.base_rul'
   private async get_root(req:Request, res:Response): Promise<void> {
     const roomId = nanoid(6).toUpperCase();
 
-    const playerUrl = `${req.protocol}://${HOST_IP}:${process.env.PORT || 8081}/eduplay/play/${roomId}`;
-    const logicServerUrl = `${req.protocol}://${HOST_IP}:8082`;
+    // Extrai o hostname de 'this.base_rul' (formato esperado: 'hostname:port')
+    const hostname = this.base_rul.split(':')[0];
+
+    const playerUrl = `http://192.168.68.100:8081/eduplay/play/${roomId}`;
+    const logicServerUrl = `http://192.168.68.100:8082`; // Mantém a porta 8082 para o server de lógica
 
     const html = await ejs.renderFile(path.join(__dirname, 'quiz-presenter.ejs'),
       {
@@ -68,9 +76,13 @@ class eduplay implements ServiceInterface {
     res.send(html);
   }
 
+  // ATUALIZADO: URLs usam 'this.base_rul'
   private async get_mobile(req: Request, res: Response): Promise<void> {
     const { roomId } = req.params;
-    const logicServerUrl = `${req.protocol}://${req.hostname}:8082`;
+    
+    // Extrai o hostname de 'this.base_rul'
+    const hostname = this.base_rul.split(':')[0];
+    const logicServerUrl = `http://${hostname}:8082`; // Mantém a porta 8082
 
     const html = await ejs.renderFile(path.join(__dirname, 'quiz-player.ejs'), 
         {
@@ -102,6 +114,28 @@ class eduplay implements ServiceInterface {
         }
       }
     };
+  }
+
+  // NOVO: Método 'bald' adicionado para seguir o padrão 'uff'
+  private bald(): bald {
+    let validFrom = new Date();
+    let validUntil = new Date();
+    validUntil.setHours(validUntil.getHours() + 3);
+
+    return [
+      {
+        appContextId: `urn:tv30:appcontext:${cuid.slug()}`,
+        appId: `urn:tv30:app:${cuid.slug()}`,
+        appName: 'Eduplay Quiz', // Nome do app (do bam)
+        appType: 'TV30-Ginga-HTML5', // Padrão
+        bcastEntryPackageUrl: `http://${this.base_rul}`, // URL base do serviço
+        bcastEntryPointUrl: '/eduplay', // Ponto de entrada (root do router)
+        clearAppContextCacheDate: validFrom.toISOString(),
+        controlCode: 'AUTOSTART', // Padrão copiado do uff
+        validFrom: validFrom.toISOString(),
+        validUntil: validUntil.toISOString(),
+      }
+    ]
   }
 }
 

@@ -38,13 +38,19 @@
             }
 
             console.log("Scheduling light effects...");
-            document.addEventListener("stream_event", (event) => {
-                const { name, color } = JSON.parse(event.detail);
-                console.log("UFF: event action => ", JSON.parse(event.detail))
-                playLightEffect(sepe, name, color)
+            document.addEventListener("stream_event", (e) => {
+                const event = JSON.parse(e.detail);
+                event.effects.forEach(effect => {
+                    if (effect.type === "LightType") {
+                        console.log("UFF: Sending Color Event to SEPE", effect.description)
+                        playLightEffect(sepe, effect.action, effect.color)
+                    } else if (effect.type === "ScentType") {
+                        playScentEffect(sepe, effect.action, effect.intensity)
+                    }
+                });
             })
 
-            document.addEventListener('beforeunload', async (e) => {
+            window.addEventListener('beforeunload', async (e) => {
                 console.log("Turning effects off before quitting page.")
                 await playLightEffect(sepe, "stop", [0, 0, 0]);
             });
