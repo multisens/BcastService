@@ -211,7 +211,7 @@
       <!-- Vote Popup -->
       <div id="votapopup" class="vota">
         <img class="bg" src="media/webmedia/popup-background.png" alt="fundo" />
-        <h2  id="txt_vitoria" class="title">Escolha do Replay</h2>
+        <h2  id="txt_vitoria" class="title">Utilize seu celular para escolher um replay</h2>
         <div id="votacao" class="options">
           <button class="option" type="button">
             <img id="vot_1" src="media/webmedia/icon_arrow1.png" alt="" />
@@ -249,11 +249,6 @@
 
       document.addEventListener('timeupdate', (e) => {
         console.log('Tempo transmissão:' + e.detail);
-        if (e.detail >= 60 && video_timer == 0) {
-                startVote();
-                video_timer += 1;
-                timer_vote = 0;
-              }
       });
 
       function receiveFrameMessage(e) {
@@ -267,18 +262,31 @@
           // Silencia erros de parse
         }
       }
-        setInterval(() => {
-          if(video_timer == 1)
+
+      //Timer ao abrir o fullscreen
+      setInterval(() => {
+          if(timer_vote == 60)
           {
-            if(timer_vote >= 60)
-            {
-                stopVote();
-                video_timer += 1;
-            }
-            else
-            { timer_vote +=1; }
+              startReplay();
           }
-        }, 1000);
+          else if(timer_vote == 120)
+          {
+              stopReplay();
+          }
+          else if(timer_vote == 180)
+          {
+              startVote();
+              const msg = { type: 'message', value: "start" };
+              BroadcastToCompanionViaCCWS(msg);
+              BroadcastToCompanionDirectSockets(msg);
+          }
+          else if(timer_vote == 240)
+          {
+              declareVencedor();
+          }
+
+          timer_vote +=1;
+      }, 1000);
 
       // Estado inicial da UI
       $('#logos').show();
@@ -288,12 +296,20 @@
       $('#votacao').hide();
       $('#vr').addClass('focused');
 
-      function startVote() {
+      function startReplay() {
         $('#votapopup').show();
         $('#votacao').show();
       }
-      function stopVote() {
+      function stopReplay() {
         $('#votapopup').hide();
+      }
+      function startVote() {
+        $('#votapopup').show();
+        $('#votacao').hide();
+
+        const mySpan = document.getElementById("txt_vitoria");
+        mySpan.innerText = 'Escolha sua escola preferida pelo celular'; 
+        votos = [];
       }
 
       function openVRPop() {
@@ -388,6 +404,9 @@
           } else if (msg && msg.message && msg.message.deviceClass === 'companion') {
             // aceita tanto string quanto objeto
             if (!handle_companion.includes(msg.handle)) handle_companion.push(msg.handle);
+          } else if (msg && msg.type && msg.type === 'vote') {
+            // recebe os votos
+            votos.push(msg.choice);
           }
           MSG_COUNT += 1;
         } catch (err) {
@@ -718,13 +737,18 @@
       }
 
       function declareVencedor() {
-        $('#votapopup').show();
-        $('#votacao').hide();
+        const counts = votos.reduce((acc, val) => {
+          acc[val] = (acc[val] || 0) + 1;
+          return acc;
+        }, {});
+
+        const entries = Object.entries(counts);
+        entries.sort((a, b) => b[1] - a[1]);
+        escola = entries.slice(0, 2).map(e => e[0]);
+
 
         const mySpan = document.getElementById("txt_vitoria");
-        const escola1 = "Grande Rio";
-        const escola2 = "Imperatriz Leopoldinense";
-        mySpan.innerText = '1º colocado: '+escola1+' ! 2º colocado: '+escola2+' !'; 
+        mySpan.innerText = '1º colocado: '+escola[0]+' ! 2º colocado: '+escola[1]+' !'; 
       }
 
       // Expondo funções globais para o navigation.js acionar via atributo `select`.
