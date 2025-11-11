@@ -45,7 +45,7 @@ const services = new Map<string, ServiceInterface>([
   ['eduplay', eduplay]
 ]);
 
-const bsid: string = cuid.slug();
+const bsid: string = process.env.BSID || cuid.slug();
 const bamt: bamt = [];
 
 services.forEach((mod, key) => {

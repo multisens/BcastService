@@ -1,10 +1,12 @@
 import cuid from 'cuid';
+import * as dotenv from 'dotenv';
 import express, { Router, Request, Response } from "express";
 import ejs from 'ejs';
 import { MqttClient } from 'mqtt';
 import path from 'path';
 import { nanoid } from "nanoid";
 import { ServiceInterface, bam, esg, bald } from '../../types';
+dotenv.config();
 
 
 const HOST_IP = process.env.HOST_IP || "localhost";
@@ -16,7 +18,7 @@ class eduplay implements ServiceInterface {
 
   constructor() {
     this.router = express.Router();
-    this.sid = `urn:tv30:service:${cuid.slug()}`;
+    this.sid = process.env.EDUPLAY_SID || `urn:tv30:service:${cuid.slug()}`;
   }
 
   init(base_rul: string): void {

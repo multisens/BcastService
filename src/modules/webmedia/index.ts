@@ -1,9 +1,12 @@
 import cuid from "cuid";
+import * as dotenv from 'dotenv';
 import express, { Router, Request, Response } from "express";
 import ejs from "ejs";
 import { MqttClient } from "mqtt";
 import path from "path";
 import { ServiceInterface, bam, esg, bald } from "../../types";
+dotenv.config();
+
 
 class WebMedia implements ServiceInterface {
   base_rul!: string;
@@ -12,7 +15,7 @@ class WebMedia implements ServiceInterface {
 
   constructor() {
     this.router = express.Router();
-    this.sid = `urn:tv30:service:${cuid.slug()}`;
+    this.sid = process.env.WEBMEDIA_SID || `urn:tv30:service:${cuid.slug()}`;
   }
 
   init(base_rul: string): void {
