@@ -13,8 +13,8 @@ let current_playlist: hlsPlaylist = {
     target_dur: 1,
     segments_dur: '1.001000'
 };
-// let max_seg = 4284 - current_playlist.playlist_size;
-let max_seg = 3120;
+
+let max_seg = 60; // default number of segments to restart
 let broker: MqttClient;
 
 export function setBroker(client: MqttClient) {
@@ -50,6 +50,10 @@ function get_playlist(res: Response, playlist_name: string): void {
             const data = fs.readFileSync(events_path, 'utf8');
             current_playlist.events = JSON.parse(data);
             current_playlist.events!.active = new Set<number>();
+            max_seg = current_playlist.events!.max_seg + 1 - current_playlist.playlist_size;
+            if (current_playlist.events!.extinf) {
+                current_playlist.segments_dur = current_playlist.events!.extinf;
+            }
 
             logger.debug(`Stream has events file: ${events_path}`);
         } catch (error) {
@@ -78,7 +82,7 @@ function get_playlist(res: Response, playlist_name: string): void {
     res.send(playlist);
 
     if (current_playlist.events) {
-        notify_event(current_segment);
+        notify_event(current_segment + 3);
     }
 }
 
