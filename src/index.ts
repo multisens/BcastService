@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://127.0.0.1:8080'],
+  origin: ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:8081', 'http://127.0.0.1:8081'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Range'],
   exposedHeaders: ['Content-Length', 'Content-Range'],
@@ -38,18 +38,25 @@ setBroker(client);
 import webmedia from './modules/webmedia';
 import uff from './modules/uff';
 import eduplay from './modules/eduplay';
+import usersTest from './modules/users-test';
 
 const services = new Map<string, ServiceInterface>([
   ['webmedia', webmedia],
   ['uff', uff],
-  ['eduplay', eduplay]
+  ['eduplay', eduplay],
+  ['users-test', usersTest]
 ]);
 
 const bsid: string = process.env.BSID || cuid.slug();
 const bamt: bamt = [];
 
+// Em Docker, AoP precisa fazer proxy pro bcast via service-name (bcast:8081),
+// nao localhost (que dentro do container AoP nao resolve pro bcast).
+// BCAST_HOSTNAME=bcast no compose. Fora de container, default localhost.
+const baseHost: string = process.env.BCAST_HOSTNAME || 'localhost';
+
 services.forEach((mod, key) => {
-  mod.init(`localhost:${_PORT}`);
+  mod.init(`${baseHost}:${_PORT}`);
   bamt.push(mod.bam());
 
   if (mod.router) {

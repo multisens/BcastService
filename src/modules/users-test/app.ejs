@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trocar Usuário — TV 3.0</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0d1a;
+      --surface:  #1a1a2e;
+      --border:   #2a2a5a;
+      --accent:   #4f8ef7;
+      --green:    #22c55e;
+      --red:      #ef4444;
+      --text:     #e2e8f0;
+      --muted:    #94a3b8;
+      --radius:   16px;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    body {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { font-size: 1.6rem; font-weight: 600; }
+    .current {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .current strong { color: var(--green); }
+
+    main {
+      padding: 2rem;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+      align-content: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 3px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .card.focused {
+      border-color: var(--accent);
+      transform: scale(1.05);
+      box-shadow: 0 0 0 4px rgba(79, 142, 247, 0.25);
+    }
+    .card.current::after {
+      content: "ATIVO";
+      position: absolute;
+      transform: translateY(-3.2rem);
+      background: var(--green);
+      color: #062;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.4rem;
+    }
+    .card { position: relative; }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .nickname  { font-size: 1.1rem; font-weight: 500; text-align: center; word-break: break-word; }
+    .userid    { font-size: 0.7rem; color: var(--muted); font-family: monospace; }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+    }
+    .empty.error { color: var(--red); }
+
+    footer {
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    kbd {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.3rem;
+      padding: 0.15rem 0.45rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+
+    .toast {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      max-width: 320px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .toast.show   { opacity: 1; }
+    .toast.error  { border-left-color: var(--red); }
+    .toast.ok     { border-left-color: var(--green); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Trocar Usuário</h1>
+    <div class="current" id="current-info">carregando…</div>
+  </header>
+
+  <main id="grid">
+    <div class="empty" id="empty-state">carregando usuários…</div>
+  </main>
+
+  <footer>
+    <span><kbd>← → ↑ ↓</kbd> navegar &nbsp;·&nbsp; <kbd>Enter</kbd> selecionar &nbsp;·&nbsp; <kbd>R</kbd> recarregar</span>
+    <span id="status">CCWS: ?</span>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // CCWS via KrakenD interno. URL absoluta porque o módulo é servido pelo bcast (porta diferente).
+    const CCWS = "http://" + window.location.hostname + ":44642";
+
+    let users = [];        // [{id, nickname, avatar}]
+    let focusIndex = 0;
+    let currentUserId = null;
+
+    const $grid    = document.getElementById("grid");
+    const $current = document.getElementById("current-info");
+    const $status  = document.getElementById("status");
+    const $toast   = document.getElementById("toast");
+
+    function toast(msg, type = "info") {
+      $toast.textContent = msg;
+      $toast.className = "toast show " + type;
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => $toast.classList.remove("show"), 2500);
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/[&<>"']/g, c =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c])
+      );
+    }
+
+    // Default avatar (verde) quando user nao customizou.
+    // Mesma forma dos PNGs legados: quadrado rounded com silhueta de pessoa em outline branco.
+    const DEFAULT_AVATAR_SVG =
+      '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">' +
+        '<rect width="100" height="100" rx="30" fill="#4d7c5b"/>' +
+        '<circle cx="50" cy="40" r="14" fill="none" stroke="#ffffff" stroke-width="5"/>' +
+        '<path d="M 14 90 a 36 36 0 0 1 72 0" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>' +
+      '</svg>';
+
+    function avatarHtml(avatar) {
+      if (!avatar) return DEFAULT_AVATAR_SVG;
+      // Avatar agora eh SVG inline gravado no Redis/JSON
+      if (typeof avatar === 'string' && avatar.startsWith('<svg')) return avatar;
+      return DEFAULT_AVATAR_SVG;
+    }
+
+    function renderGrid() {
+      if (!users.length) {
+        $grid.innerHTML = '<div class="empty">Nenhum usuário com consentimento pro serviço atual.</div>';
+        return;
+      }
+
+      $grid.innerHTML = users.map((u, i) => {
+        const isFocused = i === focusIndex;
+        const isCurrent = u.id === currentUserId;
+        const classes = ["card"];
+        if (isFocused) classes.push("focused");
+        if (isCurrent) classes.push("current");
+
+        return '<div class="' + classes.join(" ") + '" data-idx="' + i + '">' +
+                 '<div class="avatar">' + avatarHtml(u.avatar) + '</div>' +
+                 '<div class="nickname">' + escapeHtml(u.nickname || "(sem nickname)") + '</div>' +
+                 '<div class="userid">' + escapeHtml(u.id.slice(0, 12)) + '</div>' +
+               '</div>';
+      }).join("");
+
+      const focused = $grid.querySelector(".card.focused");
+      if (focused) focused.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function setFocus(delta) {
+      if (!users.length) return;
+      focusIndex = (focusIndex + delta + users.length) % users.length;
+      renderGrid();
+    }
+
+    function updateCurrentInfo() {
+      const cur = users.find(u => u.id === currentUserId);
+      if (!currentUserId) {
+        $current.innerHTML = "Ativo: <strong style='color:var(--muted)'>nenhum</strong>";
+      } else if (cur) {
+        $current.innerHTML = "Ativo: <strong>" + escapeHtml(cur.nickname || cur.id) + "</strong>";
+      } else {
+        $current.innerHTML = "Ativo: <strong>" + escapeHtml(currentUserId.slice(0, 12)) + "</strong>";
+      }
+    }
+
+    async function loadUsers() {
+      $status.textContent = "CCWS: carregando…";
+      $grid.innerHTML = '<div class="empty">carregando usuários…</div>';
+
+      try {
+        // 1) lista IDs (C.6.14.1)
+        const r = await fetch(CCWS + "/tv3/current-service/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ and: [] })
+        });
+        if (!r.ok) throw new Error("lista falhou: HTTP " + r.status);
+        const data = await r.json();
+        const ids  = (data.users || []).map(u => u.id).filter(Boolean);
+
+        // 2) detalhe de cada (paralelo)
+        const details = await Promise.all(ids.map(async id => {
+          try {
+            const dr = await fetch(CCWS + "/tv3/current-service/users/" + encodeURIComponent(id));
+            if (!dr.ok) return { id };
+            const d = await dr.json();
+            return { id, nickname: d.nickname || d.name || null, avatar: d.avatar || null };
+          } catch { return { id }; }
+        }));
+
+        users = details;
+
+        // 3) tenta saber quem é o atual
+        try {
+          const cr = await fetch(CCWS + "/tv3/current-service/users/current-user");
+          if (cr.ok) {
+            const cd = await cr.json();
+            currentUserId = cd.id || null;
+          }
+        } catch {}
+
+        focusIndex = 0;
+        if (currentUserId) {
+          const idx = users.findIndex(u => u.id === currentUserId);
+          if (idx >= 0) focusIndex = idx;
+        }
+
+        $status.textContent = "CCWS: OK (" + users.length + ")";
+        updateCurrentInfo();
+        renderGrid();
+      } catch (err) {
+        $status.textContent = "CCWS: erro";
+        $grid.innerHTML = '<div class="empty error">Falha ao carregar usuários: ' + escapeHtml(err.message) + '</div>';
+      }
+    }
+
+    async function selectFocused() {
+      const u = users[focusIndex];
+      if (!u) return;
+      if (u.id === currentUserId) {
+        toast("Já é o usuário ativo", "info");
+        return;
+      }
+
+      try {
+        const r = await fetch(CCWS + "/tv3/current-service/users/current-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: u.id })
+        });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        currentUserId = u.id;
+        toast("Trocou pra " + (u.nickname || u.id.slice(0, 8)), "ok");
+        updateCurrentInfo();
+        renderGrid();
+      } catch (err) {
+        toast("Erro ao trocar: " + err.message, "error");
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      const k = e.key;
+      if (k === "ArrowRight" || k === "ArrowDown") { setFocus(+1); e.preventDefault(); }
+      else if (k === "ArrowLeft" || k === "ArrowUp") { setFocus(-1); e.preventDefault(); }
+      else if (k === "Enter")  { selectFocused(); e.preventDefault(); }
+      else if (k === "r" || k === "R") { loadUsers(); }
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>
