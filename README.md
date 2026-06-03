@@ -22,8 +22,20 @@ The **Broadcaster Service** project provides an evironment for simulating a TV 3
 
 # Environment
 
-* PORT : Port used for broadcaster apps
-* BROKER : MQTT broker url
+Required (server fails on boot if missing):
+
+* `MQTT_HOST` : hostname of the MQTT broker (service name inside Docker)
+* `BCAST_HOSTNAME` : hostname advertised in `bcastEntryPackageUrl` (must be the
+  Docker service name so AoP can proxy to it via the internal DNS)
+
+Optional (with defaults):
+
+* `PORT` : HTTP server port (default `8081`)
+* `BSID`, `EDUPLAY_SID`, `UFF_SID`, `WEBMEDIA_SID` : fixed service IDs (default
+  generated via cuid.slug at each restart, which leaves orphan retained topics)
+* `LOG_LEVEL` : `ERROR` | `INFO` | `DEBUG` (default `ERROR`)
+
+See `.env.example` for the full list.
 
 
 # Execution

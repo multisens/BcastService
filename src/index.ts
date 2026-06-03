@@ -3,8 +3,22 @@ import cuid from 'cuid';
 import * as dotenv from 'dotenv';
 import express, { Application } from 'express';
 import mqtt, { MqttClient } from 'mqtt';
+import logger from './logger';
 import { ServiceInterface, bamt } from './types';
 dotenv.config();
+
+// Fail-fast: garante que envs obrigatorias estao setadas antes de qualquer
+// inicializacao (MQTT, HTTP server). Se faltar alguma, loga claro e termina
+// com exit 1.
+function assertEnv(required: string[]): void {
+    const missing = required.filter(k => !process.env[k] || String(process.env[k]).trim() === '');
+    if (missing.length) {
+        logger.error(`[boot] missing required env vars: ${missing.join(', ')}`);
+        logger.error(`[boot] check docker-compose.yml or .env`);
+        process.exit(1);
+    }
+}
+assertEnv(['MQTT_HOST', 'BCAST_HOSTNAME']);
 
 
 const _PORT:string = process.env.PORT || '8081';
