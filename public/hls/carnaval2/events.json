@@ -164,7 +164,7 @@
             "seg_start": 338,
             "seg_end": 351,
             "action": {
-                "name" : "start",
+                "name" : "stop",
                 "description": "Luz Branca",
                 "color": [255, 255, 255]
             }

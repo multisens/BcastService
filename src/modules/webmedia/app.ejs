@@ -265,22 +265,22 @@
 
       //Timer ao abrir o fullscreen
       setInterval(() => {
-          if(timer_vote == 60)
+          if(timer_vote == 40)
           {
               startReplay();
+              BroadcastToCompanionDirectSockets({ type: 'replay', value: 'start' });
           }
-          else if(timer_vote == 120)
+          else if(timer_vote == 75)
           {
               stopReplay();
+              BroadcastToCompanionDirectSockets({ type: 'replay', value: 'stop' });
           }
-          else if(timer_vote == 180)
+          else if(timer_vote == 80)
           {
               startVote();
-              const msg = { type: 'message', value: "start" };
-              BroadcastToCompanionViaCCWS(msg);
-              BroadcastToCompanionDirectSockets(msg);
+              BroadcastToCompanionDirectSockets({ type: 'message', value: 'start' });
           }
-          else if(timer_vote == 240)
+          else if(timer_vote == 120)
           {
               declareVencedor();
           }
@@ -308,8 +308,8 @@
         $('#votacao').hide();
 
         const mySpan = document.getElementById("txt_vitoria");
-        mySpan.innerText = 'Escolha sua escola preferida pelo celular'; 
-        votos = [];
+        mySpan.innerText = 'Escolha sua escola preferida pelo celular';
+        votos.length = 0;
       }
 
       function openVRPop() {
@@ -357,6 +357,16 @@
   // buffer simples para armazenar mensagens recebidas dos sockets diretos
   let companionMessages = []; // { url, raw, parsed?, timestamp }
       let ws_VR;
+      let votos = [];
+
+      const escolaMap = {
+        beijaflor:  { name: 'Beija Flor',  img: 'media/webmedia/flag-beijaflor.jpg'  },
+        granderio:  { name: 'Grande Rio',   img: 'media/webmedia/flag-granderio.jpg'  },
+        imperatriz: { name: 'Imperatriz',   img: 'media/webmedia/flag-imperatriz.jpg' },
+        mangueira:  { name: 'Mangueira',    img: 'media/webmedia/flag-mangueira.jpg'  },
+        portela:    { name: 'Portela',      img: 'media/webmedia/flag-portela.jpg'    },
+        viradouro:  { name: 'Viradouro',    img: 'media/webmedia/flag-viradouro.jpg'  },
+      };
 
       async function getNCL360device() {
         const url = 'http://localhost:44642/tv3/remote-device/devices/guarana';
@@ -483,45 +493,45 @@
         return uniqueUrls;
       }
 
-      // Abre sockets diretos com cada companion
+      // Abre sockets diretos com cada companion e aguarda todos estarem OPEN
       async function openSocketByDevice() {
         try {
           const urls = await getSocketUrlByHandle();
-          // fecha anteriores
-          companionSockets.forEach((e) => {
-            try {
-              e.socket.close();
-            } catch (_) {}
-          });
+          companionSockets.forEach((e) => { try { e.socket.close(); } catch (_) {} });
           companionSockets = [];
 
-          urls.forEach((url) => {
+          await Promise.all(urls.map((url) => new Promise((resolve) => {
             try {
               const s = new WebSocket(url);
 
-              s.addEventListener('open', () => console.log('Socket open', url));
+              s.addEventListener('open', () => {
+                console.log('Socket open', url);
+                companionSockets.push({ url, socket: s });
+                resolve();
+              });
 
-              // coleta mensagens recebidas no buffer global companionMessages
               s.addEventListener('message', (ev) => {
                 const raw = ev.data;
                 let parsed = null;
-                try {
-                  if (typeof raw === 'string') parsed = JSON.parse(raw);
-                } catch (_) {
-                  // mensagem não é JSON — mantemos raw
-                }
+                try { if (typeof raw === 'string') parsed = JSON.parse(raw); } catch (_) {}
                 companionMessages.push({ url, raw, parsed, timestamp: Date.now() });
                 console.log('Socket message', url, raw);
+                if (parsed && parsed.type === 'vote' && parsed.choice) {
+                  votos.push(parsed.choice);
+                }
               });
 
               s.addEventListener('close', () => console.log('Socket closed', url));
-              s.addEventListener('error', (err) => console.error('Socket error', url, err));
-
-              companionSockets.push({ url, socket: s });
+              s.addEventListener('error', (err) => {
+                console.error('Socket error', url, err);
+                resolve(); // não bloqueia se der erro
+              });
             } catch (err) {
               console.error('Failed to open socket for', url, err);
+              resolve();
             }
-          });
+          })));
+
           return companionSockets;
         } catch (err) {
           console.error('openSocketByDevice failed', err);
@@ -558,11 +568,8 @@
       }
 
       function BroadcastToCompanionViaCCWS(form) {
-        if (!handle_companion || handle_companion.length === 0) {
-          alert('Nenhum dispositivo companion encontrado');
-          return;
-        }
-        handle_companion.forEach((h) => SendDeviceMessage(ws, h, form));
+        // Relay via sockets diretos (entry point local do CCWS) — não via WS global indefinido
+        BroadcastToCompanionDirectSockets(form);
       }
 
       function BroadcastToCompanionDirectSockets(payload) {
@@ -715,12 +722,10 @@
       }
 
       async function btnCMPConn() {
-        // Abre sockets diretos para companions descobertos
+        // Abre sockets diretos para companions descobertos (aguarda OPEN antes de enviar)
         await openSocketByDevice();
 
-        // Exemplo: envia um ping de teste para companions via CCWS e sockets diretos
         const msg = { type: 'hello', at: Date.now() };
-        BroadcastToCompanionViaCCWS(msg);
         BroadcastToCompanionDirectSockets(msg);
       }
 
@@ -744,11 +749,16 @@
 
         const entries = Object.entries(counts);
         entries.sort((a, b) => b[1] - a[1]);
-        escola = entries.slice(0, 2).map(e => e[0]);
+        const top = entries.slice(0, 2).map(e => e[0]);
 
+        function cardHtml(pos, key) {
+          const info = escolaMap[key];
+          if (!info) return `${pos}º —`;
+          return `${pos}º <img src="${info.img}" alt="${info.name}" style="height:1.8em;vertical-align:middle;border-radius:.3em;margin:0 .3em"> ${info.name}`;
+        }
 
         const mySpan = document.getElementById("txt_vitoria");
-        mySpan.innerText = '1º colocado: '+escola[0]+' ! 2º colocado: '+escola[1]+' !'; 
+        mySpan.innerHTML = cardHtml(1, top[0]) + ' &nbsp; ' + cardHtml(2, top[1]);
       }
 
       // Expondo funções globais para o navigation.js acionar via atributo `select`.
