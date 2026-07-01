@@ -43,9 +43,9 @@
                 event.effects.forEach(effect => {
                     if (effect.type === "LightType") {
                         console.log("UFF: Sending Color Event to SEPE", effect.description)
-                        playLightEffect(sepe, effect.action, effect.color)
+                        playLightEffect(sepe, effect.action, effect.color, effect.location)
                     } else if (effect.type === "ScentType") {
-                        playScentEffect(sepe, effect.action, effect.intensity)
+                        playScentEffect(sepe, effect.action, effect.intensity, effect.location)
                     }
                 });
             })

@@ -24,11 +24,15 @@ async function findSepe() {
     }
 }
 
-async function playLightEffect(sepe, action, color) {
+async function playLightEffect(sepe, action, color, location) {
+    const properties = [{ name: "color", value: color }];
+    if (location) {
+        properties.push({ name: "location", value: location });
+    }
     const body = {
         effectType: "LightType",
         action: action,
-        properties: [{ name: "color", value: color }],
+        properties: properties,
     };
 
     const response = await fetch(
@@ -47,11 +51,15 @@ async function playLightEffect(sepe, action, color) {
     }
 }
 
-async function playScentEffect(sepe, action, intensity) {
+async function playScentEffect(sepe, action, intensity, location) {
+    const properties = [{ name: "intensity", value: intensity }];
+    if (location) {
+        properties.push({ name: "location", value: location });
+    }
     const body = {
         effectType: "ScentType",
         action: action,
-        properties: [{ name: "intensity", value: intensity }],
+        properties: properties,
     };
 
     const response = await fetch(
