@@ -3,3 +3,6 @@ dist
 .env
 .git
 *.log
+# public/ e servido via bind-mount no docker-compose (ver service bcast),
+# nao copiado pra imagem — evita baixar ~2.3GB de media a cada build.
+public
