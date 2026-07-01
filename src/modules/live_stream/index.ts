@@ -61,16 +61,30 @@ function get_playlist(res: Response, playlist_name: string): void {
         }
     }
 
-    const current_segment = Math.floor(process.uptime() % max_seg); // return to zero after maximum of segments
+    // elapsed grows without bound: it feeds a *monotonic* MEDIA-SEQUENCE, which
+    // the HLS spec requires. current_segment (the on-disk file index) still wraps
+    // back to zero so the video content loops.
+    const elapsed = Math.floor(process.uptime());
+    const loop_count = Math.floor(elapsed / max_seg);
+    const current_segment = elapsed % max_seg; // return to zero after maximum of segments
 
     let playlist = '#EXTM3U\n';
-    playlist += `#EXT-X-VERSION:${current_playlist.playlist_size}\n`;
+    playlist += '#EXT-X-VERSION:6\n'; // 6 required for EXT-X-DISCONTINUITY-SEQUENCE
     playlist += `#EXT-X-TARGETDURATION:${current_playlist.target_dur}\n`;
-    playlist += `#EXT-X-MEDIA-SEQUENCE:${current_segment}\n`;
+    // MEDIA-SEQUENCE must never go backwards, or VHS loses track of its buffered
+    // segments and throws "duration"/"end" of undefined on every loop.
+    playlist += `#EXT-X-MEDIA-SEQUENCE:${elapsed}\n`;
+    // Number of loop-point discontinuities that already scrolled out of the window.
+    playlist += `#EXT-X-DISCONTINUITY-SEQUENCE:${current_segment === 0 ? Math.max(0, loop_count - 1) : loop_count}\n`;
     playlist += '#EXT-X-INDEPENDENT-SEGMENTS\n';
     let last_seg = null;
     for (let i = 0; i < current_playlist.playlist_size; i++) {
         let sn = current_segment + i;
+        // At the wrap the timeline restarts from the beginning of the video; tell
+        // the player so it resets its timestamp mapping instead of freezing.
+        if (i === 0 && current_segment === 0 && loop_count > 0) {
+            playlist += '#EXT-X-DISCONTINUITY\n';
+        }
         playlist += `#EXTINF:${current_playlist.segments_dur},\n`;
         playlist += `${current_playlist.seg_name}_${sn.toString().padStart(3, '0')}.ts\n`;
         last_seg = sn;
