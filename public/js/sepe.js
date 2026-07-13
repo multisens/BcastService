@@ -78,10 +78,38 @@ async function playScentEffect(sepe, action, intensity, location) {
     }
 }
 
+async function playWindEffect(sepe, action, intensityValue, location) {
+    const properties = [{ name: "intensityValue", value: intensityValue }];
+    if (location) {
+        properties.push({ name: "location", value: location });
+    }
+    const body = {
+        effectType: "WindType",
+        action: action,
+        properties: properties,
+    };
+
+    const response = await fetch(
+        "http://localhost:44642/tv3/sensory-effect-renderers/" + sepe.id,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        }
+    );
+
+    if(!response.ok) {
+        console.warn(response)
+    }
+}
+
 async function turnOffEffects() {
     const sepe = findSepe();
     if(sepe){
         playLightEffect(sepe, "stop", [0,0,0]);
         playScentEffect(sepe, "stop", 0)
+        playWindEffect(sepe, "stop", 0)
     }
 }

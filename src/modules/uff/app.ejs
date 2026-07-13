@@ -46,6 +46,8 @@
                         playLightEffect(sepe, effect.action, effect.color, effect.location)
                     } else if (effect.type === "ScentType") {
                         playScentEffect(sepe, effect.action, effect.intensity, effect.location)
+                    } else if (effect.type === "WindType") {
+                        playWindEffect(sepe, effect.action, effect.intensityValue, effect.location)
                     }
                 });
             })
