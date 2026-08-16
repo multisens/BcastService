@@ -53,12 +53,14 @@ import webmedia from './modules/webmedia';
 import uff from './modules/uff';
 import eduplay from './modules/eduplay';
 import usersTest from './modules/users-test';
+import nclDemo from './modules/ncl-demo';
 
 const services = new Map<string, ServiceInterface>([
   ['webmedia', webmedia],
   ['uff', uff],
   ['eduplay', eduplay],
-  ['users-test', usersTest]
+  ['users-test', usersTest],
+  ['ncl-demo', nclDemo]
 ]);
 
 const bsid: string = process.env.BSID || cuid.slug();
