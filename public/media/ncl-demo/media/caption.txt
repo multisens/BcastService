@@ -1,1 +1,0 @@
-Hello from the second bundle — swap-app works!
