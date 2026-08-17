@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Merged VR + Companion + Vote</title>
+    <style>
+      :root {
+        --base-size: 1vw; /* Unidade base baseada na largura da viewport */
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        font-family: Verdana, sans-serif;
+      }
+
+      .main {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+      .main > * {
+        position: absolute;
+        display: block;
+        border: none;
+      }
+
+      .popup {
+        top: 5vh;
+        height: calc(100% - 10vh);
+        transform: translateX(-100%);
+        width: 15%;
+        left: calc(100% - 5vh);
+        border-radius: 1vh;
+        background-color: rgba(45, 45, 45, 0.9);
+        color: rgb(200, 200, 200);
+        font-size: calc(1vw + 0.5vh);
+        display: grid;
+        gap: 1vw;
+        grid-template-columns: 100%;
+        grid-template-rows: 1fr 5fr 2fr;
+        align-items: center;
+        z-index: 3;
+      }
+
+      .header {
+        display: grid;
+        align-items: center;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 100%;
+      }
+      .header img {
+        width: 40%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .middle {
+        display: grid;
+        gap: 1vw;
+        grid-template-columns: 100%;
+        grid-template-rows: 1fr 3fr 2fr;
+        align-items: center;
+        text-align: center;
+      }
+      .middle img {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .footer {
+        display: grid;
+        gap: 1vw;
+        grid-template-columns: 100%;
+        grid-template-rows: 1fr 1fr;
+        align-items: center;
+      }
+      .footer .button {
+        background-color: rgb(100, 100, 100);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 90%;
+        height: 6vh;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: calc(1vw + 0.6vh);
+        text-align: center;
+        display: grid;
+        align-items: center;
+        border-radius: .6vh;
+        cursor: pointer;
+      }
+
+      /* Popup de votação */
+      
+      .focused {
+        outline: 2px solid rgb(200, 200, 200);
+      }
+    </style>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/navigation.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <!-- Logos -->
+      <div id="logos" class="popup" style="background-color: transparent">
+        <div class="header">
+          <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" select="openVRPop"/>
+
+        </div>
+      </div>
+
+      <!-- VR Popup -->
+      <div id="vrpopup" class="popup">
+        <div class="header">
+          <img id="vr-logo" src="media/webmedia/vr-logo.png" />
+        </div>
+        <div class="middle">
+          <span>Connect your VR Headset!</span>
+          <img src="media/webmedia/video.png" />
+        </div>
+        <div class="footer">
+          <div id="vr-conn" class="button" movedown="vr-back" select="btnVRConn"><span>CONNECTED</span></div>
+          <div id="vr-back" class="button" moveup="vr-conn" select="btnVRBack"><span>BACK</span></div>
+        </div>
+      </div>
+    </div>
+    <script src="js/sepe.js"></script>
+
+    <script>
+      // --------------------------
+      // Navegação e mensagens
+      // --------------------------
+      let video_timer = 0;
+      let timer_vote = 0;
+
+      window.addEventListener('message', receiveFrameMessage);
+      document.addEventListener('keydown', (e) => {
+        navigate(e.key);
+      });
+
+      document.addEventListener('timeupdate', (e) => {
+        console.log('Tempo transmissão:' + e.detail);
+      });
+
+      function receiveFrameMessage(e) {
+        try {
+          // Algumas integrações enviam string JSON
+          const m = JSON.parse(e.data);
+          if (m && m.type === 'keydown' && m.key) {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: m.key }));
+          }
+        } catch (_) {
+          // Silencia erros de parse
+        }
+      }
+
+      //Timer ao abrir o fullscreen
+      setInterval(() => {
+          timer_vote +=1;
+      }, 1000);
+
+      // Estado inicial da UI
+      $('#logos').show();
+      $('#vrpopup').hide();
+      $('#cmppopup').hide();
+      $('#vr').addClass('focused');
+
+      function openVRPop() {
+        $('#logos').hide();
+        $('#vrpopup').show();
+        $('#cmppopup').hide();
+        $('#vr').removeClass('focused');
+        $('#vr-conn').addClass('focused');
+
+        getNCL360device()
+      }
+
+      function openCMPPop() {
+        $('#logos').hide();
+        $('#vrpopup').hide();
+        $('#cmppopup').show();
+        $('#cmp').removeClass('focused');
+        $('#cmp-conn').addClass('focused');
+      }
+
+      function btnBack() {
+        $('#logos').show();
+        $('#vrpopup').hide();
+        $('#cmppopup').hide();
+      }
+      function btnVRBack() {
+        btnBack();
+        $('#vr-back').removeClass('focused');
+        $('#vr').addClass('focused');
+      }
+      function btnCMPBack() {
+        btnBack();
+        $('#cmp-back').removeClass('focused');
+        $('#cmp').addClass('focused');
+      }
+
+      // --------------------------
+      // WebSockets e dispositivos
+      // --------------------------
+      let MSG_COUNT = 0;
+      let handle_vr = '';
+      let handle_companion = [];
+  let companionDevices = []; // lista com os dispositivos companion obtidos do CCWS
+  let companionSockets = []; // array de { url, socket }
+  // buffer simples para armazenar mensagens recebidas dos sockets diretos
+  let companionMessages = []; // { url, raw, parsed?, timestamp }
+      let ws_VR;
+      let votos = [];
+
+
+      async function getNCL360device() {
+        const url = 'http://localhost:44642/tv3/remote-device/devices/guarana';
+        try {
+          const resp = await fetch(url, { method: 'GET' });
+          if (!resp.ok) {
+            console.error('Failed to fetch companion devices', resp.status, resp.statusText);
+            return [];
+          }
+          const data = await resp.json();
+          console.log('NCL360 devices fetched:', data);
+          console.log("Ultimo device NCL360 ", data.devices[data.devices.length - 1].handle );
+
+          handle_device_NCL360 = data.devices[data.devices.length - 1].handle;
+          handle_vr = handle_device_NCL360;
+          url_vr = data.devices[data.devices.length - 1].url;
+          const resp_1 = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle_device_NCL360}`);
+          if (!resp_1.ok) return { handle: h, urls: [] };
+          const info = await resp_1.json();
+          url_vr = info.url;
+          console.log("Url device NCL360 ", url_vr );
+
+          ws_VR = new WebSocket('ws://localhost:' + url_vr.slice(-5));
+          
+          ws_VR.onopen = function () {
+            console.log('Connection opened...');
+          };
+          ws_VR.onmessage = ReceiveDeviceMessage;
+          ws_VR.onclose = function () {
+            console.log('Connection closed...');
+            MSG_COUNT = 0;
+          };
+        } catch (err) {
+          console.error('Error fetching NCL360 devices', err);
+          return [];
+        }
+      }
+      
+      function ReceiveDeviceMessage(evt) {
+        try {
+          const msg = JSON.parse(evt.data);
+          console.log(JSON.stringify(msg, undefined, 2));
+
+          if (msg && msg.message && msg.message.deviceClass === 'guarana') {
+            handle_vr = msg.handle;
+            con
+          } else if (msg && msg.message && msg.message.deviceClass === 'companion') {
+            // aceita tanto string quanto objeto
+            if (!handle_companion.includes(msg.handle)) handle_companion.push(msg.handle);
+          } else if (msg && msg.type && msg.type === 'vote') {
+            // recebe os votos
+            votos.push(msg.choice);
+          }
+          MSG_COUNT += 1;
+        } catch (err) {
+          console.error('ReceiveDeviceMessage parse error', err);
+        }
+      }
+
+      // Busca os dispositivos companion registrados no CCWS e armazena o resultado
+      async function getcompaniondevices() {
+        const url = 'http://localhost:44642/tv3/remote-device/devices/companion';
+        try {
+          const resp = await fetch(url, { method: 'GET' });
+          if (!resp.ok) {
+            console.error('Failed to fetch companion devices', resp.status, resp.statusText);
+            return [];
+          }
+          const data = await resp.json();
+          companionDevices = Array.isArray(data) ? data : [data];
+          console.log('Companion devices fetched:', companionDevices);
+
+          // Atualiza os handles, se existirem
+          const handles = companionDevices
+            .flatMap((d) => (d && d.devices ? d.devices : [d]))
+            .map((d) => d && d.handle)
+            .filter(Boolean);
+          if (handles.length) {
+            handle_companion = Array.from(new Set(handles));
+            console.log('Updated handle_companion:', handle_companion);
+          }
+          return companionDevices;
+        } catch (err) {
+          console.error('Error fetching companion devices', err);
+          return [];
+        }
+      }
+
+      // Retorna lista de URLs por handle (deduplicadas)
+      async function getSocketUrlByHandle() {
+        const devices = await getcompaniondevices();
+        const handles = (devices || [])
+          .flatMap((item) => (item && item.devices ? item.devices : [item]))
+          .map((d) => d && d.handle)
+          .filter(Boolean);
+        if (!handles || handles.length === 0) return [];
+
+        const results = await Promise.all(
+          handles.map(async (h) => {
+            try {
+              const resp = await fetch(`http://localhost:44642/tv3/remote-device/device/${h}`);
+              if (!resp.ok) return { handle: h, urls: [] };
+              const info = await resp.json();
+              const urls = [];
+
+              if (typeof info === 'string') urls.push(info);
+              if (Array.isArray(info?.urls)) urls.push(...info.urls);
+              if (typeof info?.url === 'string') urls.push(info.url);
+              if (Array.isArray(info?.devices)) info.devices.forEach((d) => d?.url && urls.push(d.url));
+
+              // scan genérico
+              Object.values(info || {}).forEach((v) => {
+                const isUrl = (s) => typeof s === 'string' && /^(https?:\/\/|wss?:\/\/)/.test(s);
+                if (isUrl(v)) urls.push(v);
+                if (Array.isArray(v)) v.forEach((x) => isUrl(x) && urls.push(x));
+              });
+
+              return { handle: h, urls: Array.from(new Set(urls)) };
+            } catch (err) {
+              return { handle: h, urls: [], error: String(err) };
+            }
+          })
+        );
+
+        const uniqueUrls = Array.from(new Set(results.flatMap((r) => (r && r.urls ? r.urls : [])).filter(Boolean)));
+        return uniqueUrls;
+      }
+
+      // Abre sockets diretos com cada companion e aguarda todos estarem OPEN
+      async function openSocketByDevice() {
+        try {
+          const urls = await getSocketUrlByHandle();
+          companionSockets.forEach((e) => { try { e.socket.close(); } catch (_) {} });
+          companionSockets = [];
+
+          await Promise.all(urls.map((url) => new Promise((resolve) => {
+            try {
+              const s = new WebSocket(url);
+
+              s.addEventListener('open', () => {
+                console.log('Socket open', url);
+                companionSockets.push({ url, socket: s });
+                resolve();
+              });
+
+              s.addEventListener('message', (ev) => {
+                const raw = ev.data;
+                let parsed = null;
+                try { if (typeof raw === 'string') parsed = JSON.parse(raw); } catch (_) {}
+                companionMessages.push({ url, raw, parsed, timestamp: Date.now() });
+                console.log('Socket message', url, raw);
+                if (parsed && parsed.type === 'vote' && parsed.choice) {
+                  votos.push(parsed.choice);
+                }
+              });
+
+              s.addEventListener('close', () => console.log('Socket closed', url));
+              s.addEventListener('error', (err) => {
+                console.error('Socket error', url, err);
+                resolve(); // não bloqueia se der erro
+              });
+            } catch (err) {
+              console.error('Failed to open socket for', url, err);
+              resolve();
+            }
+          })));
+
+          return companionSockets;
+        } catch (err) {
+          console.error('openSocketByDevice failed', err);
+          return [];
+        }
+      }
+
+      // Utilitários de envio
+      function SendConfigManual(wsTarget, config) {
+        try {
+          wsTarget.send(JSON.stringify(config));
+          console.log('Config sent', JSON.stringify(config));
+        } catch (err) {
+          console.error('SendConfigManual error', err);
+        }
+      }
+
+      function SendDeviceMessage(wsTarget, handle, form) {
+        if (!handle) {
+          alert('Dispositivo não encontrado');
+          return;
+        }
+        try {
+          wsTarget.send(
+            JSON.stringify({
+              service: 'remotedevice',
+              handle: handle,
+              message: form,
+            })
+          );
+          console.log('Device Message Sent to', handle);
+        } catch (err) {
+          console.error('Device send failed', handle, err);
+        }
+      }
+
+      function BroadcastToCompanionViaCCWS(form) {
+        // Relay via sockets diretos (entry point local do CCWS) — não via WS global indefinido
+        BroadcastToCompanionDirectSockets(form);
+      }
+
+      function BroadcastToCompanionDirectSockets(payload) {
+        // Se houver sockets diretos abertos, envia também por eles
+        const data = typeof payload === 'string' ? payload : JSON.stringify(payload);
+        companionSockets.forEach((entry) => {
+          try {
+            entry.socket.send(data);
+          } catch (err) {
+            console.error('Direct socket send failed', entry.url, err);
+          }
+        });
+      }
+
+      // Envia a mensagem de abertura de URL para UM handle específico, usando apenas
+      async function SendOpenUrlCommand(handle, url) {
+        if (!handle || !url) {
+          console.error('SendOpenUrlCommand: handle e url são obrigatórios');
+          return { ok: false, error: 'missing_handle_or_url' };
+        }
+
+        // tenta casar diretamente com companionSockets usando comparações flexíveis
+        function urlsMatch(a, b) {
+          if (!a || !b) return false;
+          if (a === b) return true;
+          try {
+            const pa = new URL(a).href;
+            const pb = new URL(b).href;
+            if (pa === pb) return true;
+            if (pa.endsWith(pb) || pb.endsWith(pa)) return true;
+            if (pa.includes(pb) || pb.includes(pa)) return true;
+          } catch (_) {
+            if (a.endsWith(b) || b.endsWith(a) || a.includes(b) || b.includes(a)) return true;
+          }
+          return false;
+        }
+
+        let foundEntry = null;
+        // 1) tentar encontrar por igualdade/substring com a url passada
+        for (const entry of companionSockets) {
+          if (!entry || !entry.url) continue;
+          if (urlsMatch(entry.url, url)) { foundEntry = entry; break; }
+        }
+
+        // 2) se não encontrou, buscar URLs do device no CCWS e tentar casar
+        if (!foundEntry) {
+          try {
+            const resp = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle}`);
+            if (resp.ok) {
+              const info = await resp.json();
+              const candidateUrls = [];
+              if (typeof info === 'string') candidateUrls.push(info);
+              if (Array.isArray(info?.urls)) candidateUrls.push(...info.urls);
+              if (typeof info?.url === 'string') candidateUrls.push(info.url);
+              if (Array.isArray(info?.devices)) info.devices.forEach((d) => d?.url && candidateUrls.push(d.url));
+              Object.values(info || {}).forEach((v) => {
+                if (typeof v === 'string') candidateUrls.push(v);
+                if (Array.isArray(v)) v.forEach((x) => typeof x === 'string' && candidateUrls.push(x));
+              });
+
+              for (const cu of candidateUrls) {
+                for (const entry of companionSockets) {
+                  if (!entry || !entry.url) continue;
+                  if (urlsMatch(entry.url, cu)) { foundEntry = entry; break; }
+                }
+                if (foundEntry) break;
+              }
+            }
+          } catch (err) {
+            console.warn('SendOpenUrlCommand: erro ao buscar device info', handle, err);
+          }
+        }
+
+        if (!foundEntry || !foundEntry.socket) {
+          console.error('SendOpenUrlCommand: nenhum socket direto encontrado para handle', handle);
+          return { ok: false, error: 'no_direct_socket_for_handle' };
+        }
+
+        const sock = foundEntry.socket;
+        if (sock.readyState !== WebSocket.OPEN) {
+          console.error('SendOpenUrlCommand: socket não está aberto', foundEntry.url, sock.readyState);
+          return { ok: false, error: 'socket_not_open', state: sock.readyState };
+        }
+
+        const message = {
+          service: 'remotedevice',
+          handle: handle,
+          message: {
+            deviceClass: 'companion',
+            url: url,
+          },
+        };
+
+        try {
+          sock.send(JSON.stringify(message));
+          console.log('SendOpenUrlCommand: enviado para handle', handle, 'via', foundEntry.url);
+          return { ok: true };
+        } catch (err) {
+          console.error('SendOpenUrlCommand: falha ao enviar', err);
+          return { ok: false, error: String(err) };
+        }
+      }
+      
+      // Helpers para acessar/limpar as mensagens coletadas dos sockets diretos
+      function getCollectedCompanionMessages() {
+        return companionMessages.slice(); // devolve cópia
+      }
+
+      function clearCollectedCompanionMessages() {
+        companionMessages.length = 0;
+      }
+      
+      // --------------------------
+      // Ações de botões
+      // --------------------------
+      async function btnVRConn() {
+        console.log('Web socket =', ws_VR);
+        // Configurações iniciais
+        SendConfigManual(ws_VR, {
+          service: 'appfiles',
+          appid: '100',
+          path: '/home/dell-g15-1/Documentos/TV30/bcast/public/media/webmedia',
+        });
+        SendConfigManual(ws_VR, {
+          service: 'userapi',
+          path: '/home/dell-g15-1/Documentos/TV30/ginga/user-files',
+          currentUser: 'c3167a18-5dc5',
+          currentService: 'midiacom',
+        });
+
+        // Carrega cena
+        //SendDeviceMessage(ws_VR, handle_vr, );
+        ws_VR.send( JSON.stringify({
+          nodeId: 'm1',
+          nodeSrc: 'http://localhost:8081/media/webmedia/cena.ncl360',
+          appId: '100',
+          type: 'application/x-ncl360',
+        }));
+
+
+        // Dispara presentation.start
+        setTimeout(() => {
+          ws_VR.send( JSON.stringify({
+            nodeId: 'm1',
+            label: '',
+            appId: '100',
+            eventType: 'presentation',
+            action: 'start',
+          }));
+        }, 2000);
+      }
+
+      async function btnCMPConn() {
+        // Abre sockets diretos para companions descobertos (aguarda OPEN antes de enviar)
+        await openSocketByDevice();
+
+        const msg = { type: 'hello', at: Date.now() };
+        BroadcastToCompanionDirectSockets(msg);
+      }
+
+      function btnVote(option) {
+        // Envia voto selecionado aos companions
+        const payload = { type: 'vote', option };
+        BroadcastToCompanionViaCCWS(payload);
+        BroadcastToCompanionDirectSockets(payload);
+
+        // Feedback local simples
+        console.log('Voto enviado:', option);
+        // Opcional: esconder popup após voto
+        // $('#votapopup').hide();
+      }
+
+      function declareVencedor() {
+        const counts = votos.reduce((acc, val) => {
+          acc[val] = (acc[val] || 0) + 1;
+          return acc;
+        }, {});
+
+        const entries = Object.entries(counts);
+        entries.sort((a, b) => b[1] - a[1]);
+        const top = entries.slice(0, 2).map(e => e[0]);
+
+        function cardHtml(pos, key) {
+          const info = escolaMap[key];
+          if (!info) return `${pos}º —`;
+          return `${pos}º <img src="${info.img}" alt="${info.name}" style="height:1.8em;vertical-align:middle;border-radius:.3em;margin:0 .3em"> ${info.name}`;
+        }
+
+        const mySpan = document.getElementById("txt_vitoria");
+        mySpan.innerHTML = cardHtml(1, top[0]) + ' &nbsp; ' + cardHtml(2, top[1]);
+      }
+
+      // Expondo funções globais para o navigation.js acionar via atributo `select`.
+      window.openVRPop = openVRPop;
+      window.openCMPPop = openCMPPop;
+      window.btnVRConn = btnVRConn;
+      window.btnVRBack = btnVRBack;
+      window.btnCMPConn = btnCMPConn;
+      window.btnCMPBack = btnCMPBack;
+      window.btnVote = btnVote;
+  // expose message buffer helpers
+  window.getCollectedCompanionMessages = getCollectedCompanionMessages;
+  window.clearCollectedCompanionMessages = clearCollectedCompanionMessages;
+
+  async function execute() {
+            
+        }
+
+        execute();
+    </script>
+  </body>
+</html>

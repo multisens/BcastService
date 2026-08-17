@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<ncl360 id="cena">
+    <head>
+        <!-- caracteristicas de apresentacao -->
+        <descriptor id="dhub" region="default.sky" projection="equirectangular" volume="1"/>
+
+    </head>
+    
+    <body>
+    
+        <!-- Vídeo já começa no Play -->
+		<port component="hub"/>
+		
+        <!-- Definição das mídias -->
+        <media id="hub" src="http://192.168.1.9:8081/media/USP/AmericaAntesVR.mp4" descriptor="dhub"/>
+        
+	</body>
+</ncl360>
