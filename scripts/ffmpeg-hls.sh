@@ -1,14 +1,43 @@
 #!/bin/bash
-# USAGE: ./ffmpeg-hls.sh <path to file> <output subdir>
+# USAGE: ./ffmpeg-hls.sh <path to file> <output subdir> [--once|--infinite]
+#   --once      (default) Convert the video a single time and stop at its end.
+#   --infinite  Loop the input forever, continuously generating segments.
 
-INPUT_FILE=$1
-OUTPUT_DIR="./public/hls/$2"
+INPUT_FILE=""
+OUTPUT_SUBDIR=""
+LOOP_MODE="once"
+
+for arg in "$@"; do
+  case "$arg" in
+    --infinite)
+      LOOP_MODE="infinite"
+      ;;
+    --once)
+      LOOP_MODE="once"
+      ;;
+    *)
+      if [ -z "$INPUT_FILE" ]; then
+        INPUT_FILE="$arg"
+      elif [ -z "$OUTPUT_SUBDIR" ]; then
+        OUTPUT_SUBDIR="$arg"
+      fi
+      ;;
+  esac
+done
+
+OUTPUT_DIR="./public/hls/${OUTPUT_SUBDIR}"
 MASTER_PLAYLIST_NAME="master.m3u8"
 CHILD_PLAYLIST_NAME="playlist_1080p.m3u8"
 
-if [ -z "$1" ] || [ -z "$2"]; then
-  echo "USAGE: ./ffmpeg-hls.sh <path to file> <output subdir>"
+if [ -z "$INPUT_FILE" ] || [ -z "$OUTPUT_SUBDIR" ]; then
+  echo "USAGE: ./ffmpeg-hls.sh <path to file> <output subdir> [--once|--infinite]"
   exit 1
+fi
+
+if [ "$LOOP_MODE" = "infinite" ]; then
+  STREAM_LOOP_OPT="-stream_loop -1"
+else
+  STREAM_LOOP_OPT=""
 fi
 
 if [ ! -f "$INPUT_FILE" ]; then
@@ -38,10 +67,11 @@ echo "-ac 2                                             : 2 audio channels"
 echo "-hls_time 1                                       : HLS file segment with 1 seconds"
 echo "-hls_list_size 0                                  : Keep all segments in the playlist"
 echo "-hls_flags independent_segments                   : Create independent segments"
+echo "Loop mode: ${LOOP_MODE}"
 echo "-------------------------------------------------------------------\n\n"
 
 ffmpeg \
-    -stream_loop -1 \
+    ${STREAM_LOOP_OPT} \
     -i "$INPUT_FILE" \
     -c:v libx264 -preset slow -b:v 4M -maxrate 4M -bufsize 8M \
     -g 24 -keyint_min 24 -sc_threshold 0 \
