@@ -77,7 +77,7 @@ class usp2 implements ServiceInterface {
           lang: "pt-br",
         },
         Description: {
-          text: "América Antes de Nós é uma série em vídeo 360° que percorre vestígios arqueológicos, pinturas rupestres e paisagens naturais da Serra da Capivara. A partir do olhar de quem pesquisa, vive e preserva esse território piauiense, a série revela diferentes formas de pertencimento e relações ancestrais com o lugar, destacando o papel das mulheres cientistas que, desde Niède Guidon, buscam decifrar e proteger esse santuário da nossa história.",
+          text: "América Antes de Nós é uma série em vídeo 360° que percorre vestígios arqueológicos, pinturas rupestres e paisagens naturais da Serra da Capivara. A partir do olhar de quem pesquisa, vive e preserva esse território piauiense, destacando o papel das mulheres cientistas desde Niède Guidon.",
           lang: "pt-br",
         },
         ContentAdvisoryRatings: "Livre",

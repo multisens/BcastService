@@ -73,14 +73,14 @@ class usp3 implements ServiceInterface {
         validTo: "18:00",
         globalServiceID: this.sid,
         Name: {
-          text: "Guerreira",
+          text: "Serra da Capivara",
           lang: "pt-br",
         },
         Description: {
-          text: "Guerreira (2026) conta a história, em vídeo 360º, de Arianys Dell Vale, uma jovem venezuelana que sobreviveu a uma infância brutal e foi posteriormente traficada para o Brasil. E atualmente é colaboradora ativa da ONG CAMI, que combate o tráfico de pessoas.",
+          text: "Na caatinga brasileira, a Serra da Capivara, relicário da arqueologia mundial, guarda, em seus mais de 1.200 sítios arqueológicos, memórias e vestígios que desafiam teorias sobre as primeiras ocupações humanas no continente.",
           lang: "pt-br",
         },
-        ContentAdvisoryRatings: "10anos",
+        ContentAdvisoryRatings: "Livre",
         Genre: {
           term: "Live",
           color: "#ed6f6fff",
