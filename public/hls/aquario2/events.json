@@ -22,6 +22,11 @@
                         "type": "ScentType",
                         "action": "start",
                         "intensity": 100
+                    },
+                    {
+                        "type": "WindType",
+                        "action": "start",
+                        "intensityValue": 100
                     }
                 ]
             }
@@ -133,6 +138,11 @@
                         "type": "ScentType",
                         "action": "stop",
                         "intensity": 0
+                    },
+                    {
+                        "type": "WindType",
+                        "action": "stop",
+                        "intensityValue": 0
                     }
                 ]
             }

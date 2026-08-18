@@ -1,0 +1,976 @@
+{
+    "last_seg": 121,
+    "max_seg": 121,
+    "extinf": "1.000000",
+    "actions": [
+        {
+            "seg_start": 0,
+            "seg_end": 9,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (00:00)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 10,
+            "seg_end": 10,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (00:10)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 11,
+            "seg_end": 11,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (00:11)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 12,
+            "seg_end": 12,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (00:12)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 13,
+            "seg_end": 13,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (00:13)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 14,
+            "seg_end": 17,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (00:14)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 18,
+            "seg_end": 18,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (00:18)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 19,
+            "seg_end": 19,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (00:19)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 20,
+            "seg_end": 20,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (00:20)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 21,
+            "seg_end": 21,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (00:21)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 22,
+            "seg_end": 26,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (00:22)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 27,
+            "seg_end": 27,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (00:27)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 28,
+            "seg_end": 28,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (00:28)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 29,
+            "seg_end": 29,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (00:29)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 30,
+            "seg_end": 30,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (00:30)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 31,
+            "seg_end": 37,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (00:31)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 38,
+            "seg_end": 38,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (00:38)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 39,
+            "seg_end": 39,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (00:39)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 40,
+            "seg_end": 40,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (00:40)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 41,
+            "seg_end": 41,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (00:41)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 42,
+            "seg_end": 46,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (00:42)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 47,
+            "seg_end": 47,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Azul (00:47)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 48,
+            "seg_end": 48,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Vermelho (00:48)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 49,
+            "seg_end": 49,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Azul (00:49)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 50,
+            "seg_end": 50,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Vermelho (00:50)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 51,
+            "seg_end": 54,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (00:51)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 55,
+            "seg_end": 55,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Azul (00:55)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 56,
+            "seg_end": 56,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Vermelho (00:56)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 57,
+            "seg_end": 57,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Azul (00:57)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 58,
+            "seg_end": 58,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Vermelho (00:58)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 59,
+            "seg_end": 64,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (00:59)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 65,
+            "seg_end": 65,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Azul (01:05)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 66,
+            "seg_end": 66,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Vermelho (01:06)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 67,
+            "seg_end": 67,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Azul (01:07)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 68,
+            "seg_end": 68,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Vermelho (01:08)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 69,
+            "seg_end": 81,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (01:09)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 82,
+            "seg_end": 82,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (01:22)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 83,
+            "seg_end": 83,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (01:23)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 84,
+            "seg_end": 84,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (01:24)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 85,
+            "seg_end": 85,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (01:25)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 86,
+            "seg_end": 95,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (01:26)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 96,
+            "seg_end": 96,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Azul (01:36)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 97,
+            "seg_end": 97,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Vermelho (01:37)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 98,
+            "seg_end": 98,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Azul (01:38)",
+                        "color": [
+                            0,
+                            0,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 99,
+            "seg_end": 99,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "França Vermelho (01:39)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 100,
+            "seg_end": 107,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (01:40)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 108,
+            "seg_end": 108,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (01:48)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 109,
+            "seg_end": 109,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (01:49)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 110,
+            "seg_end": 110,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Branco (01:50)",
+                        "color": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 111,
+            "seg_end": 111,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "start",
+                        "description": "Inglaterra Vermelho (01:51)",
+                        "color": [
+                            255,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        },
+        {
+            "seg_start": 112,
+            "seg_end": 121,
+            "action": {
+                "effects": [
+                    {
+                        "type": "LightType",
+                        "action": "stop",
+                        "description": "Apaga (01:52)",
+                        "color": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "location": "*:*:*"
+                    }
+                ]
+            }
+        }
+    ]
+}

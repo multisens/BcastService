@@ -13,7 +13,7 @@
 		<port component="hub"/>
 		
         <!-- Definição das mídias -->
-        <media id="hub" src="http://192.168.1.9:8081/media/USP/SerraCapivaraVR.mp4" descriptor="dhub"/>
+        <media id="hub" src="http://192.168.0.150:8081/media/USP/SerraCapivaraVR.mp4" descriptor="dhub"/>
         
 	</body>
 </ncl360>

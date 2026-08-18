@@ -172,8 +172,9 @@
       <!-- Logos -->
       <div id="logos" class="popup" style="background-color: transparent">
         <div class="header">
-          <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" select="openVRPop"/>
-          <img id="cmp" src="media/webmedia/companion-logo.png" moveleft="vr" select="openCMPPop" />
+          <!-- VR temporariamente oculto (nao deletar): style display:none + nav de #cmp sem moveleft -->
+          <img id="vr" src="media/webmedia/vr-logo.png" moveright="cmp" select="openVRPop" style="display:none"/>
+          <img id="cmp" src="media/webmedia/companion-logo.png" select="openCMPPop" />
         </div>
       </div>
 
@@ -294,7 +295,7 @@
       $('#cmppopup').hide();
       $('#votapopup').hide();
       $('#votacao').hide();
-      $('#vr').addClass('focused');
+      $('#cmp').addClass('focused'); // VR oculto: foco inicial vai pro companion
 
       function startReplay() {
         $('#votapopup').show();
@@ -703,7 +704,7 @@
         //SendDeviceMessage(ws_VR, handle_vr, );
         ws_VR.send( JSON.stringify({
           nodeId: 'm1',
-          nodeSrc: 'http://192.168.68.100:8081/media/webmedia/cena.ncl360',
+          nodeSrc: 'http://192.168.0.150:8081/media/webmedia/cena.ncl360',
           appId: '100',
           type: 'application/x-ncl360',
         }));

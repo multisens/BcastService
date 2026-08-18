@@ -51,12 +51,12 @@ setBroker(client);
 // modules for specific services
 import webmedia from './modules/webmedia';
 import uff from './modules/uff';
-import eduplay from './modules/eduplay';
+import nclDemo from './modules/ncl-demo';
+// import eduplay from './modules/eduplay';
 import usp1 from './modules/usp1';
 import usp2 from './modules/usp2';
 import usp3 from './modules/usp3';
-import usersTest from './modules/users-test';
-import nclDemo from './modules/ncl-demo';
+// import usersTest from './modules/users-test';
 
 const services = new Map<string, ServiceInterface>([
   ['webmedia', webmedia],
@@ -64,8 +64,8 @@ const services = new Map<string, ServiceInterface>([
   ['usp1', usp1],
   ['usp2', usp2],
   ['usp3', usp3],
-  ['eduplay', eduplay],
-  ['users-test', usersTest],
+  // ['eduplay', eduplay],
+  // ['users-test', usersTest],
   ['ncl-demo', nclDemo]
 ]);
 

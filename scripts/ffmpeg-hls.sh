@@ -53,7 +53,7 @@ echo "Master Playlist: ${OUTPUT_DIR}/${MASTER_PLAYLIST_NAME}"
 echo "Child Playlist:  ${OUTPUT_DIR}/${CHILD_PLAYLIST_NAME}"
 echo "FFmpeg options:"
 echo "-c:v libx264                                      : Using codec H.264/x264"
-echo "-preset slow                                      : Uses slower compression"
+echo "-preset medium                                  : Uses slower compression"
 echo "-b:v 4M                                           : 4 Mbps target bitrate"
 echo "-maxrate 4M                                       : 4 Mbps maximum bitrate"
 echo "-bufsize 8M                                       : Buffer size"
@@ -73,7 +73,7 @@ echo "-------------------------------------------------------------------\n\n"
 ffmpeg \
     ${STREAM_LOOP_OPT} \
     -i "$INPUT_FILE" \
-    -c:v libx264 -preset slow -b:v 4M -maxrate 4M -bufsize 8M \
+    -c:v libx264 -preset medium -b:v 4M -maxrate 4M -bufsize 8M \
     -g 24 -keyint_min 24 -sc_threshold 0 \
     -force_key_frames "expr:gte(t, n_forced * 1)" \
     -c:a aac -b:a 128k -ac 2 \

@@ -46,7 +46,7 @@ class UFF implements ServiceInterface {
         backgroundColor: '#282828ff',
         foregroundColor: '#c8c8c8ff',
         initialMediaURLs: [
-          `http://${this.base_rul}/live/hls/aquario.m3u8`
+          `http://${this.base_rul}/live/hls/soccer.m3u8`
         ]
       }
   }
