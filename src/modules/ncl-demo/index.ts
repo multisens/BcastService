@@ -38,7 +38,10 @@ class nclDemo implements ServiceInterface {
       bannerIcon: '',
       appDescription: 'Aplicacao NCL de demonstracao (Ginga-NCL sobre TV30).',
       backgroundColor: '#282828ff',
-      foregroundColor: '#c8c8c8ff'
+      foregroundColor: '#c8c8c8ff',
+      // Ginga-NCL nao tem feed HLS ao vivo, entao a tela de bootstrap mostra a
+      // thumbnail estatica da app no lugar do preview de video.
+      initialMediaURLs: [`http://${this.base_rul}/media/ncl-demo/media/thumbnail.jpg`]
     };
   }
 
