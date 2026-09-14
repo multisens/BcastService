@@ -23,157 +23,63 @@ let current_playlist: hlsPlaylist = {
     segments_dur: '1.001000'
 };
 
-let max_seg = 60; // default number of segments to restart
+let max_seg = 60;
 let broker: MqttClient;
 
 export function setBroker(client: MqttClient) {
     broker = client;
 }
 
-// http://<host>/live/hls/<playlist_name>.m3u8
+function resolveDashFilePath(file: string): string {
+    const publicPath = path.join(__dirname, '../../../public/dash', file);
+    if (fs.existsSync(publicPath)) {
+        return publicPath;
+    }
+    return path.join(__dirname, '../../../dash', file);
+}
+
+// http://<host>/live/dash/<playlist_name>.mpd
 router.get('/dash/:file', (req: Request, res: Response) => {
     const file = req.params.file;
+    logger.debug(`[${new Date().toISOString()}] Calling /live/dash/${file}`);
 
-    logger.debug(
-        `[${new Date().toISOString()}] Calling /live/dash/${file}`
-    );
-
-    const file_path = path.join(
-        __dirname,
-        '../../../public/dash',
-        file
-    );
+    const file_path = resolveDashFilePath(file);
 
     if (file.endsWith('.mpd')) {
-        logger.debug(
-            `... returning DASH manifest: ${file_path}`
-        );
+        res.setHeader('Content-Type', 'application/dash+xml');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
 
-        res.setHeader(
-            'Content-Type',
-            'application/dash+xml'
-        );
-
-        res.setHeader(
-            'Cache-Control',
-            'no-cache, no-store, must-revalidate'
-        );
-
-        res.setHeader(
-            'Pragma',
-            'no-cache'
-        );
-
-        res.setHeader(
-            'Expires',
-            '0'
-        );
-
-        res.sendFile(
-            file_path,
-            (err) => {
-                if (err) {
-                    logger.error(
-                        `Error sending DASH manifest: ${err}`
-                    );
-
-                    if (!res.headersSent) {
-                        res.status(404).send(
-                            'File not found'
-                        );
-                    }
-                }
-            }
-        );
-
+        res.sendFile(file_path, (err) => {
+            if (err && !res.headersSent) res.status(404).send('File not found');
+        });
         return;
     }
-
 
     if (file === 'events.json') {
-        logger.debug(
-            `... returning DASH events: ${file_path}`
-        );
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
 
-        res.setHeader(
-            'Content-Type',
-            'application/json'
-        );
-
-        res.setHeader(
-            'Cache-Control',
-            'no-cache, no-store, must-revalidate'
-        );
-
-        res.setHeader(
-            'Pragma',
-            'no-cache'
-        );
-
-        res.setHeader(
-            'Expires',
-            '0'
-        );
-
-        res.sendFile(
-            file_path,
-            (err) => {
-                if (err) {
-                    logger.error(
-                        `Error sending events.json: ${err}`
-                    );
-
-                    if (!res.headersSent) {
-                        res.status(404).send(
-                            'File not found'
-                        );
-                    }
-                }
-            }
-        );
-
+        res.sendFile(file_path, (err) => {
+            if (err && !res.headersSent) res.status(404).send('File not found');
+        });
         return;
     }
-
 
     if (file.endsWith('.m4s')) {
-        logger.debug(
-            `... returning DASH segment: ${file_path}`
-        );
+        res.setHeader('Content-Type', 'video/mp4');
+        res.setHeader('Cache-Control', 'no-cache');
 
-        res.setHeader(
-            'Content-Type',
-            'video/mp4'
-        );
-
-        res.setHeader(
-            'Cache-Control',
-            'no-cache'
-        );
-
-        res.sendFile(
-            file_path,
-            (err) => {
-                if (err) {
-                    logger.error(
-                        `Error sending DASH segment: ${err}`
-                    );
-
-                    if (!res.headersSent) {
-                        res.status(404).send(
-                            'File not found'
-                        );
-                    }
-                }
-            }
-        );
-
+        res.sendFile(file_path, (err) => {
+            if (err && !res.headersSent) res.status(404).send('File not found');
+        });
         return;
     }
 
-    res.status(404).send(
-        `File not found: ${file}`
-    );
+    res.status(404).send(`File not found: ${file}`);
 });
 
 
@@ -197,7 +103,7 @@ router.get('/hls/:file', (req: Request, res: Response) => {
 });
 
 function get_playlist(res: Response, playlist_name: string): void {
-    if (current_playlist === null || playlist_name != current_playlist.name) {
+    if (current_playlist === null || playlist_name !== current_playlist.name) {
         current_playlist.name = playlist_name;
 
         try {

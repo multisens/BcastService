@@ -107,6 +107,7 @@ export type stream_action = {
 export type stream_events = {
   last_seg: number,
   max_seg: number,
+  app?: string,
   extinf?: string,
   active: Set<number>,
   actions : stream_action[]
