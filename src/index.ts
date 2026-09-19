@@ -106,10 +106,20 @@ if (process.send) {
 }
 
 
-// for shutting down
-// process.on('SIGTERM', clean_topics);
-// process.on('SIGINT', clean_topics);
-// process.on('SIGUSR2', clean_topics);
+// for shutting down: limpa os topicos retidos e encerra o processo.
+// clean_topics sozinho nao basta como handler — registrar um listener de
+// sinal impede o node de encerrar por conta propria, e sem process.exit o
+// container ficaria vivo ate o kill-timeout do docker (deixando, na
+// pratica, topicos orfaos retidos no broker a cada parada).
+function shutdown() {
+  clean_topics();
+  const hardExit = setTimeout(() => process.exit(0), 3000);
+  hardExit.unref();
+  client.end(false, {}, () => process.exit(0));
+}
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+process.on('SIGUSR2', shutdown);
 
 function clean_topics() {
   client.publish(`tlm/lls/${bsid}/bamt`, '', { retain : true });
