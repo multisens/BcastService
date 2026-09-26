@@ -1,10 +1,15 @@
 #!/bin/bash
+# USAGE: ./ffmpeg-dash.sh <path to file> [output dir]
+# (era um caminho de maquina pessoal fixado — defeito 9 da vacina)
 
-# Define o caminho do arquivo de entrada (assumindo que está no diretório pai)
-INPUT_FILE="/Users/gablsilva/tcc/BcastService/sea_clip.mp4"
-# Define o diretório de saída como 'dash' no diretório pai (fora da pasta scripts)
-OUTPUT_DIR="./dash"
+INPUT_FILE=$1
+OUTPUT_DIR="${2:-./dash}"
 MPD_NAME="playlist_1080p.mpd"
+
+if [ -z "$1" ]; then
+  echo "USAGE: ./ffmpeg-dash.sh <path to file> [output dir]"
+  exit 1
+fi
 
 # 1. Verifica a existência do arquivo de entrada
 if [ ! -f "$INPUT_FILE" ]; then

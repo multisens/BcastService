@@ -127,7 +127,9 @@ function get_segment(res: Response, file: string) {
     logger.debug(`... returning segment ${file}`);
 
 	res.setHeader('Content-Type', 'video/mp2t');
-    res.setHeader('Cache-Control', 'no-cache');
+    // Segmento de midia e imutavel (o nome carrega o numero de sequencia):
+    // cache longo na origem; o proxy respeita (B.6.3).
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     res.sendFile(file_path, (err) => {
         if (err) {
             logger.error('Error sending file:', err);

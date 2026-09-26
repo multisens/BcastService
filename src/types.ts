@@ -11,16 +11,20 @@ export interface ServiceInterface {
 }
 
 
+// Tabela 6 da ABNT NBR 25608 (elemento BAM). appVersion e unsignedByte;
+// cores em '#RRGGBB' (sem canal alfa); bannerIcon e OBRIGATORIO (SVG 16:9,
+// modo estatico seguro, ate 16 kB); appDescription ate 40 caracteres.
 export type bam = {
   globalServiceId: string,
-  appVersion: string,
+  appVersion: number,
   appName: string,
   appIcon: string,
   bannerIcon: string,
   appDescription?: string,
   backgroundColor: string,
   foregroundColor: string,
-  initialMediaURLs?: string[]
+  initialMediaURLs?: string[],
+  ecgAppDeepLink?: string
 };
 
 export type bamt = bam[];
