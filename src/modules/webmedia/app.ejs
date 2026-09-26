@@ -371,7 +371,7 @@
       async function getNCL360device() {
         const url = 'http://localhost:44642/tv3/remote-device/devices/guarana';
         try {
-          const resp = await fetch(url, { method: 'GET' });
+          const resp = await fetch(url, { method: 'GET', headers: { 'Accept-Version': '2.1' } });
           if (!resp.ok) {
             console.error('Failed to fetch companion devices', resp.status, resp.statusText);
             return [];
@@ -381,7 +381,7 @@
 
           handle_device_NCL360 = data.devices[data.devices.length - 1].handle;
           handle_vr = handle_device_NCL360;
-          const resp_1 = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle_device_NCL360}`);
+          const resp_1 = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle_device_NCL360}`, { headers: { "Accept-Version": "2.1" } });
           if (!resp_1.ok) return { handle: h, urls: [] };
           const info = await resp_1.json();
 
@@ -428,7 +428,7 @@
       async function getcompaniondevices() {
         const url = 'http://localhost:44642/tv3/remote-device/devices/companion';
         try {
-          const resp = await fetch(url, { method: 'GET' });
+          const resp = await fetch(url, { method: 'GET', headers: { 'Accept-Version': '2.1' } });
           if (!resp.ok) {
             console.error('Failed to fetch companion devices', resp.status, resp.statusText);
             return [];
@@ -465,7 +465,7 @@
         const results = await Promise.all(
           handles.map(async (h) => {
             try {
-              const resp = await fetch(`http://localhost:44642/tv3/remote-device/device/${h}`);
+              const resp = await fetch(`http://localhost:44642/tv3/remote-device/device/${h}`, { headers: { "Accept-Version": "2.1" } });
               if (!resp.ok) return { handle: h, urls: [] };
               const info = await resp.json();
               const urls = [];
@@ -617,7 +617,7 @@
         // 2) se não encontrou, buscar URLs do device no CCWS e tentar casar
         if (!foundEntry) {
           try {
-            const resp = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle}`);
+            const resp = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle}`, { headers: { "Accept-Version": "2.1" } });
             if (resp.ok) {
               const info = await resp.json();
               const candidateUrls = [];
@@ -687,14 +687,21 @@
       // --------------------------
       async function btnVRConn() {
         // Configurações iniciais
+        // Caminhos no dispositivo remoto: configurados por ambiente no bcast
+        // (WEBMEDIA_REMOTE_MEDIA_PATH / WEBMEDIA_REMOTE_USERFILES_PATH).
+        const remoteMediaPath = '<%= remoteMediaPath %>';
+        const remoteUserFilesPath = '<%= remoteUserFilesPath %>';
+        if (!remoteMediaPath || !remoteUserFilesPath) {
+          console.warn('webmedia: WEBMEDIA_REMOTE_MEDIA_PATH/WEBMEDIA_REMOTE_USERFILES_PATH nao configurados; o dispositivo remoto nao recebera caminhos de midia.');
+        }
         SendConfigManual(ws_VR, {
           service: 'appfiles',
           appid: '100',
-          path: '/home/dell-g15-1/Documentos/TV30/bcast/public/media/webmedia',
+          path: remoteMediaPath,
         });
         SendConfigManual(ws_VR, {
           service: 'userapi',
-          path: '/home/dell-g15-1/Documentos/TV30/ginga/user-files',
+          path: remoteUserFilesPath,
           currentUser: 'c3167a18-5dc5',
           currentService: 'midiacom',
         });
@@ -703,7 +710,7 @@
         //SendDeviceMessage(ws_VR, handle_vr, );
         ws_VR.send( JSON.stringify({
           nodeId: 'm1',
-          nodeSrc: 'http://192.168.68.100:8081/media/webmedia/cena.ncl360',
+          nodeSrc: '<%= mediaBase %>/media/webmedia/cena.ncl360',
           appId: '100',
           type: 'application/x-ncl360',
         }));
