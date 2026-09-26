@@ -36,7 +36,7 @@ class UsersTest implements ServiceInterface {
   bam(): bam {
     return {
       globalServiceId: this.sid,
-      appVersion: "1.0",
+      appVersion: 1,
       appName: "Trocar Usuário",
       appIcon:
         '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">' +
@@ -46,10 +46,14 @@ class UsersTest implements ServiceInterface {
           '<path d="M16 78 c0-12 9-19 20-19 c11 0 20 7 20 19 z" fill="#ffffff"/>' +
           '<path d="M44 78 c0-12 9-19 20-19 c11 0 20 7 20 19 z" fill="#ffffff"/>' +
         "</svg>",
-      bannerIcon: "",
-      appDescription: "Lista usuários e troca o ativo (navegação por teclas)",
-      backgroundColor: "#1a1a2eff",
-      foregroundColor: "#e2e8f0ff",
+      bannerIcon:
+        '<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">' +
+        '<rect width="160" height="90" fill="#1a1a2e"/>' +
+        '<text x="80" y="50" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#e2e8f0">Trocar Usuário</text>' +
+        '</svg>',
+      appDescription: "Lista usuários e troca o perfil ativo",
+      backgroundColor: "#1a1a2e",
+      foregroundColor: "#e2e8f0",
     };
   }
 

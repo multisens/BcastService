@@ -27,7 +27,19 @@ const _PORT:string = process.env.PORT || '8081';
 const app: Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static('public'));
+// Cache (B.6.3): a ORIGEM declara a validade dos artefatos e o proxy do AoP
+// respeita (a politica antiga de des-cachear playlists no proxy era o
+// contrario do que a norma pede). Playlist de live muda a cada segmento ->
+// validade de 1s; segmentos de midia sao imutaveis -> cache longo.
+app.use(express.static('public', {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.m3u8') || filePath.endsWith('.mpd')) {
+            res.setHeader('Cache-Control', 'public, max-age=1');
+        } else if (/\.(ts|m4s|mp4|aac)$/.test(filePath)) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+    },
+}));
 app.use(cors({
   origin: ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:8081', 'http://127.0.0.1:8081'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
