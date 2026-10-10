@@ -160,14 +160,14 @@
 
   <footer>
     <span><kbd>← → ↑ ↓</kbd> navegar &nbsp;·&nbsp; <kbd>Enter</kbd> selecionar &nbsp;·&nbsp; <kbd>R</kbd> recarregar</span>
-    <span id="status">CCWS: ?</span>
+    <span id="status">TV 3.0 WebServices: ?</span>
   </footer>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    // CCWS via KrakenD interno. URL absoluta porque o módulo é servido pelo bcast (porta diferente).
-    const CCWS = "http://" + window.location.hostname + ":44642";
+    // TV 3.0 WebServices pela borda (KrakenD, superfície interna 44642). URL absoluta porque o módulo é servido pelo bcast (porta diferente).
+    const TV3WS = "http://" + window.location.hostname + ":44642";
 
     let users = [];        // [{id, nickname, avatar}]
     let focusIndex = 0;
@@ -249,12 +249,12 @@
     }
 
     async function loadUsers() {
-      $status.textContent = "CCWS: carregando…";
+      $status.textContent = "TV 3.0 WebServices: carregando…";
       $grid.innerHTML = '<div class="empty">carregando usuários…</div>';
 
       try {
         // 1) lista IDs (C.6.14.1)
-        const r = await fetch(CCWS + "/tv3/current-service/users", {
+        const r = await fetch(TV3WS + "/tv3/current-service/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ and: [] })
@@ -266,7 +266,7 @@
         // 2) detalhe de cada (paralelo)
         const details = await Promise.all(ids.map(async id => {
           try {
-            const dr = await fetch(CCWS + "/tv3/current-service/users/" + encodeURIComponent(id));
+            const dr = await fetch(TV3WS + "/tv3/current-service/users/" + encodeURIComponent(id));
             if (!dr.ok) return { id };
             const d = await dr.json();
             return { id, nickname: d.nickname || d.name || null, avatar: d.avatar || null };
@@ -277,7 +277,7 @@
 
         // 3) tenta saber quem é o atual
         try {
-          const cr = await fetch(CCWS + "/tv3/current-service/users/current-user");
+          const cr = await fetch(TV3WS + "/tv3/current-service/users/current-user");
           if (cr.ok) {
             const cd = await cr.json();
             currentUserId = cd.id || null;
@@ -290,11 +290,11 @@
           if (idx >= 0) focusIndex = idx;
         }
 
-        $status.textContent = "CCWS: OK (" + users.length + ")";
+        $status.textContent = "TV 3.0 WebServices: OK (" + users.length + ")";
         updateCurrentInfo();
         renderGrid();
       } catch (err) {
-        $status.textContent = "CCWS: erro";
+        $status.textContent = "TV 3.0 WebServices: erro";
         $grid.innerHTML = '<div class="empty error">Falha ao carregar usuários: ' + escapeHtml(err.message) + '</div>';
       }
     }
@@ -308,7 +308,7 @@
       }
 
       try {
-        const r = await fetch(CCWS + "/tv3/current-service/users/current-user", {
+        const r = await fetch(TV3WS + "/tv3/current-service/users/current-user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: u.id })

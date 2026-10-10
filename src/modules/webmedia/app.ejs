@@ -352,7 +352,7 @@
       let MSG_COUNT = 0;
       let handle_vr = '';
       let handle_companion = [];
-  let companionDevices = []; // lista com os dispositivos companion obtidos do CCWS
+  let companionDevices = []; // lista com os dispositivos companion obtidos do TV 3.0 WebServices
   let companionSockets = []; // array de { url, socket }
   // buffer simples para armazenar mensagens recebidas dos sockets diretos
   let companionMessages = []; // { url, raw, parsed?, timestamp }
@@ -424,7 +424,7 @@
         }
       }
 
-      // Busca os dispositivos companion registrados no CCWS e armazena o resultado
+      // Busca os dispositivos companion registrados no TV 3.0 WebServices e armazena o resultado
       async function getcompaniondevices() {
         const url = 'http://localhost:44642/tv3/remote-device/devices/companion';
         try {
@@ -567,8 +567,8 @@
         }
       }
 
-      function BroadcastToCompanionViaCCWS(form) {
-        // Relay via sockets diretos (entry point local do CCWS) — não via WS global indefinido
+      function BroadcastToCompanionViaTV3WS(form) {
+        // Relay via sockets diretos (entry point local do TV 3.0 WebServices) — não via WS global indefinido
         BroadcastToCompanionDirectSockets(form);
       }
 
@@ -614,7 +614,7 @@
           if (urlsMatch(entry.url, url)) { foundEntry = entry; break; }
         }
 
-        // 2) se não encontrou, buscar URLs do device no CCWS e tentar casar
+        // 2) se não encontrou, buscar URLs do device no TV 3.0 WebServices e tentar casar
         if (!foundEntry) {
           try {
             const resp = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle}`, { headers: { "Accept-Version": "2.1" } });
@@ -739,7 +739,7 @@
       function btnVote(option) {
         // Envia voto selecionado aos companions
         const payload = { type: 'vote', option };
-        BroadcastToCompanionViaCCWS(payload);
+        BroadcastToCompanionViaTV3WS(payload);
         BroadcastToCompanionDirectSockets(payload);
 
         // Feedback local simples

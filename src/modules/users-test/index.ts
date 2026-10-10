@@ -54,6 +54,10 @@ class UsersTest implements ServiceInterface {
       appDescription: "Lista usuários e troca o perfil ativo",
       backgroundColor: "#1a1a2e",
       foregroundColor: "#e2e8f0",
+      // initialMediaURLs tem uso 1 na Tabela 6. O servico de teste nao tem
+      // transmissao linear propria: aponta para o ao vivo simulado que o
+      // bcast ja serve (o mesmo do UFF)
+      initialMediaURLs: [`http://${this.base_rul}/live/hls/aquario.m3u8`],
     };
   }
 

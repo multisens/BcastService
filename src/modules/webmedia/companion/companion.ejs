@@ -55,7 +55,7 @@
 
     <script>
         const serverHost = window.location.hostname;
-        const ccwsBase   = `http://${serverHost}:44642`;
+        const tv3wsBase  = `http://${serverHost}:44642`;
         let ws;
 
         const statusBar = document.getElementById('status-bar');
@@ -107,7 +107,7 @@
         async function registerAndConnect() {
             setStatus('Conectando...', '');
             try {
-                const resp = await fetch(`${ccwsBase}/tv3/remote-device`, {
+                const resp = await fetch(`${tv3wsBase}/tv3/remote-device`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ deviceClass: 'companion', supportedTypes: ['companion'] })
