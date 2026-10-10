@@ -55,8 +55,13 @@ class eduplay implements ServiceInterface {
         '</svg>',
         // appDescription: '',
         backgroundColor: '#282828',
-        foregroundColor: '#c8c8c8'
-        // 'initialMediaURLs' não é necessário aqui, pois é um app interativo, não media player
+        foregroundColor: '#c8c8c8',
+        // initialMediaURLs tem uso 1 na Tabela 6 (antes omitido aqui, "app
+        // interativo"): o servico nao tem transmissao linear propria, entao
+        // aponta para o ao vivo simulado que o bcast ja serve (o mesmo do UFF)
+        initialMediaURLs: [
+          `http://${this.base_rul}/live/hls/aquario.m3u8`
+        ]
     }
   }
 
