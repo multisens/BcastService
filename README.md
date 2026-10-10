@@ -38,6 +38,26 @@ Optional (with defaults):
 See `.env.example` for the full list.
 
 
+# Broadcaster apps in the AoP graphics layer
+
+Since P1.3 (decided by Luis on 10/10), the AoP opens each broadcaster app on
+its own origin, `http://<app>.<APPS_DOMAIN>:<AoP port>/<bcastEntryPointUrl>`
+(default domain `apps.localhost`), and proxies that host to the
+`bcastEntryPackageUrl` of the app (see `aop/src/app-hosts.js` in TV30). The
+app's API calls then carry its own `Origin`, which the AoP registers in
+`origins:associated` while the app runs.
+
+Being cross-origin, the AoP can no longer dispatch events straight into the
+app's document. It sends them by `postMessage`, and `public/js/aop-bridge.js`
+re-dispatches them on `document` in the same shape as before: `keydown`
+(`KeyboardEvent` with `key`), `timeupdate` (`CustomEvent`, `detail` = player
+time) and `stream_event` (`CustomEvent`, `detail` = JSON text). **Every app
+shown in the graphics layer must include it** (`<script
+src="js/aop-bridge.js"></script>`), as `users-test`, `webmedia`, `uff` and
+`eduplay` do; otherwise it gets no keys. Root-relative paths (`/js/...`,
+`/media/...`) resolve against the app host and are served by bcast.
+
+
 # Execution
 
 Components managed by PM2.
