@@ -701,10 +701,13 @@
           appid: '100',
           path: remoteMediaPath,
         });
+        // currentUser: id do perfil da carga inicial
+        // (infra/user-files-template/userData.json). UUID desde a decisao do
+        // Luis em 11/10 (F-3, Tabela 7); antes, c3167a18-5dc5.
         SendConfigManual(ws_VR, {
           service: 'userapi',
           path: remoteUserFilesPath,
-          currentUser: 'c3167a18-5dc5',
+          currentUser: 'c3167a18-5dc5-4a6e-9b1d-3f2a7c5e8d10',
           currentService: 'midiacom',
         });
 
