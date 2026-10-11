@@ -30,7 +30,14 @@ Required (server fails on boot if missing):
 
 Optional (with defaults):
 
-* `PORT` : HTTP server port (default `8081`)
+* `PORT` : HTTP server port (default `8081`). In the TV30 compose the
+  container port stays 8081, and since 2026-10-11 (decision C1 by Luis)
+  Docker publishes it on a free host port of its choice
+  (`docker compose port bcast 8081` shows which). `BCAST_PUBLISH` in the TV30
+  root `.env` sets what goes in `ports:`; `8081:8081` pins it, as the AoP
+  running on the host needs. It replaces `BCAST_PORT`, which the compose no
+  longer reads. The AoP in a container reaches bcast at `bcast:8081` on the
+  Docker network, regardless of the host port
 * `BSID`, `EDUPLAY_SID`, `UFF_SID`, `WEBMEDIA_SID` : fixed service IDs (default
   generated via cuid.slug at each restart, which leaves orphan retained topics)
 * `EDUPLAY_APP_ID`, `UFF_APP_ID`, `USERS_TEST_APP_ID`, `WEBMEDIA_APP_ID` : the
