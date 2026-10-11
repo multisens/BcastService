@@ -11,8 +11,10 @@
 // - keydown: KeyboardEvent('keydown', {key}) — teclas que o AoP repassa;
 // - timeupdate: CustomEvent('timeupdate', {detail: segundos do player});
 // - stream_event: CustomEvent('stream_event', {detail: texto JSON do evento}).
-// So aceita mensagem da janela mae (a camada grafica do AoP). Fora de iframe,
-// ou aberta pelo caminho antigo (mesma origem, disparo direto), nao faz nada.
+// So aceita mensagem da janela mae (a camada grafica do AoP). Fora de iframe
+// nao faz nada; na mesma origem da janela mae (nao acontece desde 11/10: o
+// /graphicsAppProxy no host do AoP redireciona para o host da aplicacao), o
+// AoP dispara direto e nenhuma mensagem chega aqui.
 (function () {
   if (window.parent === window) return;
   window.addEventListener('message', function (e) {
