@@ -12,10 +12,16 @@ class UsersTest implements ServiceInterface {
   base_rul!: string;
   router: Router;
   sid: string;
+  appId: string;
 
   constructor() {
     this.router = express.Router();
     this.sid = process.env.USERS_TEST_SID || "urn:tv30:service:users-test";
+    // appId FIXO por aplicacao (decisao do Luis em 11/10): a Tabela 10 diz que o
+    // appId "uniquely identifies the Broadcaster Application", e o AoP tira
+    // dele o host proprio da aplicacao (P1.3); sorteado a cada partida, o host
+    // (e o que a aplicacao guarda no navegador) mudava quando o bcast reiniciava.
+    this.appId = process.env.USERS_TEST_APP_ID || "urn:tv30:app:users-test";
   }
 
   init(base_rul: string): void {
@@ -88,7 +94,7 @@ class UsersTest implements ServiceInterface {
     return [
       {
         appContextId: `urn:tv30:appcontext:${cuid.slug()}`,
-        appId:        `urn:tv30:app:${cuid.slug()}`,
+        appId:        this.appId,
         appName:      "Trocar Usuário",
         appType:      "TV30-Ginga-HTML5",
         bcastEntryPackageUrl: `http://${this.base_rul}`,

@@ -12,10 +12,16 @@ class WebMedia implements ServiceInterface {
   base_rul!: string;
   router: Router;
   sid: string;
+  appId: string;
 
   constructor() {
     this.router = express.Router();
     this.sid = process.env.WEBMEDIA_SID || `urn:tv30:service:${cuid.slug()}`;
+    // appId FIXO por aplicacao (decisao do Luis em 11/10): a Tabela 10 diz que o
+    // appId "uniquely identifies the Broadcaster Application", e o AoP tira
+    // dele o host proprio da aplicacao (P1.3); sorteado a cada partida, o host
+    // (e o que a aplicacao guarda no navegador) mudava quando o bcast reiniciava.
+    this.appId = process.env.WEBMEDIA_APP_ID || "urn:tv30:app:webmedia";
   }
 
   init(base_rul: string): void {
@@ -175,7 +181,7 @@ class WebMedia implements ServiceInterface {
     return [
       {
         appContextId: `urn:tv30:appcontext:${cuid.slug()}`,
-        appId: `urn:tv30:app:${cuid.slug()}`,
+        appId: this.appId,
         appName: "WebMedia App",
         // appIcon?: string,
         appType: "TV30-Ginga-HTML5",
