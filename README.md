@@ -1,6 +1,6 @@
 # Broadcaster Service
 
-![Node Version](https://img.shields.io/badge/Node.js-23.11.0-blueviolet?logo=nodedotjs)  ![MQTT](https://img.shields.io/badge/MQTT-blueviolet?logo=mqtt)
+![Node Version](https://img.shields.io/badge/Node.js-23.11.1-blueviolet?logo=nodedotjs)  ![MQTT](https://img.shields.io/badge/MQTT-blueviolet?logo=mqtt)
 
 The **Broadcaster Service** project provides an evironment for simulating a TV 3.0 service broadcasting.
 
@@ -17,7 +17,11 @@ The **Broadcaster Service** project provides an evironment for simulating a TV 3
 
 * Mosquitto MQTT Broker
 * Node JS
-* [FFmpeg](https://ffmpeg.org)
+* [FFmpeg](https://ffmpeg.org), only to prepare the media beforehand
+  (`scripts/ffmpeg-hls.sh`, `scripts/ffmpeg-dash.sh`). The service itself
+  serves the HLS segments already in `public/hls/<name>/` and builds the
+  playlist on each request (`src/modules/live_stream`); the TV30 image does
+  not include FFmpeg
 
 
 # Environment
@@ -39,7 +43,13 @@ Optional (with defaults):
   longer reads. The AoP in a container reaches bcast at `bcast:8081` on the
   Docker network, regardless of the host port
 * `BSID`, `EDUPLAY_SID`, `UFF_SID`, `WEBMEDIA_SID` : fixed service IDs (default
-  generated via cuid.slug at each restart, which leaves orphan retained topics)
+  generated via cuid.slug at each restart, which leaves orphan retained topics;
+  the TV30 compose sets all four)
+* `USERS_TEST_SID` : service ID of users-test (default
+  `urn:tv30:service:users-test`, fixed)
+* `EDUPLAY_LOGIC_PORT` : port of the eduplay quiz logic server, used in the
+  presenter page URL on the `BCAST_HOSTNAME` host (default `8082`; the TV30
+  compose does not start that server)
 * `EDUPLAY_APP_ID`, `UFF_APP_ID`, `USERS_TEST_APP_ID`, `WEBMEDIA_APP_ID` : the
   `appId` of each application in its BALD (default `urn:tv30:app:<module>`,
   fixed; decision by Luis on 2026-10-11). The AoP derives the application's own
@@ -77,10 +87,15 @@ src="js/aop-bridge.js"></script>`), as `users-test`, `webmedia`, `uff` and
 
 # Execution
 
-Components managed by PM2.
+In TV30, bcast runs as the `bcast` container of the root `docker-compose.yml`
+(image `tv30-bcast`, `node dist/index.js`). Outside a container:
 
 ```$ npm i```
 
 ```$ npm run build```
 
 ```$ npm run start```
+
+`npm run build` compiles the TypeScript to `dist/` and copies the EJS
+templates; `npm run start` runs `node dist/index.js`. For development,
+`npm run dev` runs `src/index.ts` with nodemon and ts-node.
