@@ -77,11 +77,24 @@
         console.log(message);
       });
 
+      // Mensagens do socket.io (servidor de logica do quiz) entram como TEXTO
+      // (textContent), nao como HTML (correcao de 12/10, spec-1210-defeitos3
+      // item 6): antes, a duracao, a mensagem de fim e a de erro iam para o
+      // innerHTML sem escape, e HTML nelas rodava no celular do jogador.
+      function showText(tag, text, style) {
+        const el = document.createElement(tag);
+        if (style) el.setAttribute("style", style);
+        el.textContent = text;
+        gameContainer.innerHTML = "";
+        gameContainer.appendChild(el);
+      }
+
       socket.on("startCountdown", (duration) => {
         const countdownContainer =
           document.getElementById("countdown-container");
         let timeLeft = duration;
-        countdownContainer.innerHTML = `<h2>O quiz começa em:</h2><div id="countdown">${timeLeft}</div>`;
+        countdownContainer.innerHTML = '<h2>O quiz começa em:</h2><div id="countdown"></div>';
+        document.getElementById("countdown").textContent = timeLeft;
         const countdownInterval = setInterval(() => {
           timeLeft--;
           const countdownEl = document.getElementById("countdown");
@@ -136,11 +149,11 @@
       });
 
       socket.on("quizEnded", (message) => {
-        gameContainer.innerHTML = `<h1>${message.message || message}</h1>`;
+        showText("h1", message.message || message);
       });
 
       socket.on("error", (message) => {
-        gameContainer.innerHTML = `<h2 style="color: #e74c3c">Erro: ${message}</h2>`;
+        showText("h2", `Erro: ${message}`, "color: #e74c3c");
       });
     </script>
   </body>

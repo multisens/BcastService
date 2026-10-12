@@ -232,10 +232,16 @@
         }
 
         // 2. Preenche e exibe o overlay de estatísticas
-        statsOverlay.innerHTML = `
-            <div class="stat stat-correct">Acertos: ${stats.correct}</div>
-            <div class="stat stat-incorrect">Erros: ${stats.incorrect}</div>
-        `;
+        // (como TEXTO, e nao HTML: os numeros vem do socket.io — correcao de
+        // 12/10, spec-1210-defeitos3 item 6, o mesmo defeito do
+        // quiz-player.ejs)
+        statsOverlay.innerHTML = "";
+        for (const [cls, label, value] of [["stat-correct", "Acertos", stats.correct], ["stat-incorrect", "Erros", stats.incorrect]]) {
+          const div = document.createElement("div");
+          div.className = "stat " + cls;
+          div.textContent = `${label}: ${value}`;
+          statsOverlay.appendChild(div);
+        }
         statsOverlay.style.display = "flex";
       });
 

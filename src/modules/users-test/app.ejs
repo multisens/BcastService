@@ -202,10 +202,35 @@
         '<path d="M 14 90 a 36 36 0 0 1 72 0" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>' +
       '</svg>';
 
+    // Avatar do perfil como <img> com o SVG em URL data: (correcao de 12/10,
+    // spec-1210-defeitos3 item 6; o mesmo tratamento do AoP, aop/src/html.js,
+    // svgDataUri). Antes, o SVG gravado no perfil (o AoP grava o avatar do
+    // POST /profile/create sem conferir o formato) ia cru para o innerHTML do
+    // grid, e atributo de evento nele rodava nesta pagina. Num <img> o
+    // navegador nao roda script do SVG nem carrega recurso externo. Sem
+    // xmlns no <svg>, ele e acrescentado (como documento image/svg+xml o
+    // namespace e obrigatorio). O padrao e constante desta pagina e segue em
+    // linha.
+    const SVG_NS = "http://www.w3.org/2000/svg";
+
+    function svgDataUri(svg) {
+      let doc = svg.trim();
+      const root = /<svg(?=[\s/>])[^>]*>/.exec(doc);
+      if (!root) return "";
+      if (!/\sxmlns\s*=/.test(root[0])) {
+        doc = doc.slice(0, root.index) + '<svg xmlns="' + SVG_NS + '"' + doc.slice(root.index + 4);
+      }
+      let bin = "";
+      for (const b of new TextEncoder().encode(doc)) bin += String.fromCharCode(b);
+      return "data:image/svg+xml;base64," + btoa(bin);
+    }
+
     function avatarHtml(avatar) {
-      if (!avatar) return DEFAULT_AVATAR_SVG;
-      // Avatar agora eh SVG inline gravado no Redis/JSON
-      if (typeof avatar === 'string' && avatar.startsWith('<svg')) return avatar;
+      // Avatar agora eh SVG gravado no Redis/JSON
+      if (typeof avatar === 'string' && avatar.startsWith('<svg')) {
+        const src = svgDataUri(avatar);
+        if (src) return '<img src="' + src + '" alt="">';
+      }
       return DEFAULT_AVATAR_SVG;
     }
 
