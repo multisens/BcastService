@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed (2026-10-12, evening: G8, Luis's decision; also in the root `CHANGELOG.md`)
+
+- `src/modules/users-test/app.ejs`: the profile `avatar` is now the name of
+  a file (Table 7, "file path"; G8), so the page asks for its content through
+  C.6.14.6, `GET /tv3/current-service/users/files?path=<avatar>` (Table
+  C.73), at the edge (44642). The request is a `fetch`, which carries the
+  page's `Origin`, by which the edge recognizes the app as an associated
+  client; one request per distinct avatar, and the grid is drawn again when
+  they arrive (results of an older load are discarded). The content is shown
+  as an `<img src="blob:...">`, where the SVG runs no script and loads
+  nothing. No avatar, an error answer (305, 405...), a network failure or a
+  `Content-Type` that is not `image/...` gives the page's default avatar,
+  which stays inline. Before, the field held the inline SVG, shown as an
+  `<img src="data:...">` (entry below).
+
 ### Security (2026-10-12, afternoon; also in the root `CHANGELOG.md`)
 
 - `src/modules/users-test/app.ejs`: the profile avatar is shown as an
