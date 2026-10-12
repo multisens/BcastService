@@ -202,36 +202,56 @@
         '<path d="M 14 90 a 36 36 0 0 1 72 0" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>' +
       '</svg>';
 
-    // Avatar do perfil como <img> com o SVG em URL data: (correcao de 12/10,
-    // spec-1210-defeitos3 item 6; o mesmo tratamento do AoP, aop/src/html.js,
-    // svgDataUri). Antes, o SVG gravado no perfil (o AoP grava o avatar do
-    // POST /profile/create sem conferir o formato) ia cru para o innerHTML do
-    // grid, e atributo de evento nele rodava nesta pagina. Num <img> o
-    // navegador nao roda script do SVG nem carrega recurso externo. Sem
-    // xmlns no <svg>, ele e acrescentado (como documento image/svg+xml o
-    // namespace e obrigatorio). O padrao e constante desta pagina e segue em
-    // linha.
-    const SVG_NS = "http://www.w3.org/2000/svg";
-
-    function svgDataUri(svg) {
-      let doc = svg.trim();
-      const root = /<svg(?=[\s/>])[^>]*>/.exec(doc);
-      if (!root) return "";
-      if (!/\sxmlns\s*=/.test(root[0])) {
-        doc = doc.slice(0, root.index) + '<svg xmlns="' + SVG_NS + '"' + doc.slice(root.index + 4);
-      }
-      let bin = "";
-      for (const b of new TextEncoder().encode(doc)) bin += String.fromCharCode(b);
-      return "data:image/svg+xml;base64," + btoa(bin);
-    }
+    // Avatar do perfil pela C.6.14.6 (decisao do Luis em 12/10, G8). O campo
+    // avatar (C.6.14.2) e o caminho do arquivo da imagem (Tabela 7: "file
+    // path"), e a pagina pede o conteudo em GET
+    // /tv3/current-service/users/files?path=<avatar> (Tabela C.73), pela borda
+    // (44642). O pedido e um fetch, que manda o Origin: e por ele que a borda
+    // reconhece esta aplicacao como associada (origins:associated, registrada
+    // pelo AoP ao abri-la na camada grafica); um <img src> direto para a borda
+    // sairia sem Origin. O conteudo vira URL blob: num <img>, onde o
+    // navegador nao roda script do SVG nem carrega recurso externo (a mesma
+    // protecao da correcao de 12/10, spec-1210-defeitos3 item 6, quando o SVG
+    // vinha em linha no campo). Sem avatar, resposta de erro (305, 405...),
+    // falha de rede ou conteudo que nao e imagem: o padrao, constante desta
+    // pagina, em linha. Antes de G8, o campo trazia o SVG em linha.
+    const avatarUrls = new Map();   // avatar -> URL blob: ("" = falhou: o padrao)
+    let avatarGeneration = 0;       // descarta o que chega de uma carga anterior
 
     function avatarHtml(avatar) {
-      // Avatar agora eh SVG gravado no Redis/JSON
-      if (typeof avatar === 'string' && avatar.startsWith('<svg')) {
-        const src = svgDataUri(avatar);
-        if (src) return '<img src="' + src + '" alt="">';
-      }
+      const url = typeof avatar === "string" && avatar ? avatarUrls.get(avatar) : "";
+      if (url) return '<img src="' + escapeHtml(url) + '" alt="">';
       return DEFAULT_AVATAR_SVG;
+    }
+
+    async function fetchAvatar(avatar) {
+      try {
+        const r = await fetch(TV3WS + "/tv3/current-service/users/files?path=" + encodeURIComponent(avatar));
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const type = (r.headers.get("Content-Type") || "").split(";")[0].trim().toLowerCase();
+        if (!type.startsWith("image/")) throw new Error("Content-Type " + (type || "ausente"));
+        return URL.createObjectURL(await r.blob());
+      } catch (err) {
+        console.warn("avatar " + avatar + ": o padrao (" + err.message + ")");
+        return "";
+      }
+    }
+
+    // um pedido por avatar distinto; a grade e redesenhada quando chegam (ate
+    // la, as imagens da carga anterior, ou o padrao)
+    async function loadAvatars() {
+      const gen = ++avatarGeneration;
+      const names = [...new Set(users.map(u => u.avatar).filter(a => typeof a === "string" && a))];
+      const got = await Promise.all(names.map(fetchAvatar));
+      if (gen !== avatarGeneration) {
+        got.forEach(url => { if (url) URL.revokeObjectURL(url); });
+        return;
+      }
+      const old = [...avatarUrls.values()];
+      avatarUrls.clear();
+      names.forEach((name, i) => avatarUrls.set(name, got[i]));
+      renderGrid();
+      old.forEach(url => { if (url) URL.revokeObjectURL(url); });
     }
 
     function renderGrid() {
@@ -320,6 +340,8 @@
         $status.textContent = "TV 3.0 WebServices: OK (" + users.length + ")";
         updateCurrentInfo();
         renderGrid();
+        // 4) avatares pela C.6.14.6 (G8); falha de um avatar e o padrao dele
+        loadAvatars();
       } catch (err) {
         $status.textContent = "TV 3.0 WebServices: erro";
         $grid.innerHTML = '<div class="empty error">Falha ao carregar usuários: ' + escapeHtml(err.message) + '</div>';
