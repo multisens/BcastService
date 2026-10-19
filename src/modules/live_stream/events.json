@@ -1,0 +1,209 @@
+{
+  "last_seg" : 10,
+  "max_seg" : 20,
+  "actions" : [
+        {
+            "seg_start": 0,
+            "seg_end": 1,
+            "action": {
+                "name" : "start",
+                "description": "Luz Variando de Cores",
+                "color": [147, 78, 26]
+            }
+        },{
+            "seg_start": 1,
+            "seg_end": 2,
+            "action": {
+                "name" : "start",
+                "description": "Luz Variando de Cores",
+                "color": [136, 32, 22]
+            }
+        },{
+            "seg_start": 2,
+            "seg_end": 3,
+            "action": {
+                "name" : "start",
+                "description": "Luz Variando de Cores",
+                "color": [140, 28, 130]
+            }
+        },{
+            "seg_start": 3,
+            "seg_end": 4,
+            "action": {
+                "name" : "start",
+                "description": "Luz Variando de Cores",
+                "color": [13, 8, 187]
+            }
+        },{
+            "seg_start": 5,
+            "seg_end": 13,
+            "action": {
+                "name" : "start",
+                "description": "Luz Variando de Cores",
+                "color": [255, 255, 255]
+            }
+        },
+        {
+            "seg_start": 14,
+            "seg_end": 42,
+            "action": {
+                "name" : "start",
+                "description": "Vermelho",
+                "color": [178, 0, 0]
+            }
+        },
+        {
+            "seg_start": 43,
+            "seg_end": 48,
+            "action": {
+                "name" : "start",
+                "description": "Fogo",
+                "color": [238, 130, 77]
+            }
+        },
+        {
+            "seg_start": 49,
+            "seg_end": 55,
+            "action": {
+                "name" : "start",
+                "description": "Vermelho",
+                "color": [178, 0, 0]
+            }
+        },
+        {
+            "seg_start": 56,
+            "seg_end": 63,
+            "action": {
+                "name" : "start",
+                "description": "Fogo",
+                "color": [238, 130, 77]
+            }
+        },
+        {
+            "seg_start": 64,
+            "seg_end": 65,
+            "action": {
+                "name" : "start",
+                "description": "Luz Vermelha",
+                "color": [178, 0, 0]
+            }
+        },
+        {
+            "seg_start": 66,
+            "seg_end": 161,
+            "action": {
+                "name" : "stop",
+                "description": "Apaga",
+                "color": [0, 0, 0]
+            }
+        },
+        {
+            "seg_start": 162,
+            "seg_end": 218,
+            "action": {
+                "name" : "start",
+                "description": "Branca",
+                "color": [255, 255, 255]
+            }
+        },
+        {
+            "seg_start": 219,
+            "seg_end": 231,
+            "action": {
+                "name" : "start",
+                "description": "Amarelo",
+                "color": [246, 201, 69]
+            }
+        },
+        {
+            "seg_start": 232,
+            "seg_end": 257,
+            "action": {
+                "name" : "start",
+                "description": "Branco",
+                "color": [255, 255, 255]
+            }
+        },
+        {
+            "seg_start": 258,
+            "seg_end": 268,
+            "action": {
+                "name" : "start",
+                "description": "Vermelho",
+                "color": [178, 0, 0]
+            }
+        },
+        {
+            "seg_start": 269,
+            "seg_end": 271,
+            "action": {
+                "name" : "start",
+                "description": "Azul Escuro",
+                "color": [14, 4, 184]
+            }
+        },
+        {
+            "seg_start": 272,
+            "seg_end": 323,
+            "action": {
+                "name" : "start",
+                "description": "Branca 2",
+                "color": [255, 255, 255]
+            }
+        },
+        {
+            "seg_start": 324,
+            "seg_end": 337,
+            "action": {
+                "name" : "start",
+                "description": "Azul Escuro",
+                "color": [14, 4, 184]
+            }
+        },
+        {
+            "seg_start": 338,
+            "seg_end": 351,
+            "action": {
+                "name" : "start",
+                "description": "Luz Branca",
+                "color": [255, 255, 255]
+            }
+        },
+        {
+            "seg_start": 352,
+            "seg_end": 362,
+            "action": {
+                "name" : "start",
+                "description": "Azul Escuro",
+                "color": [39, 85, 246]
+            }
+        },
+        {
+            "seg_start": 363,
+            "seg_end": 406,
+            "action": {
+                "name" : "start",
+                "description": "Branco",
+                "color": [255, 255, 255]
+            }
+        },
+        {
+            "seg_start": 407,
+            "seg_end": 425,
+            "action": {
+                "name" : "stop",
+                "description": "Apaga",
+                "color": [0, 0, 0]
+            }
+        },
+        {
+            "seg_start": 426,
+            "seg_end": 438,
+            "action": {
+                "name" : "start",
+                "description": "Branco",
+                "color": [255, 255, 255]
+            }
+        }
+    ]
+}

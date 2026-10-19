@@ -61,7 +61,7 @@ class WebMedia implements ServiceInterface {
       appDescription: "A TV da imersão",
       backgroundColor: "#282828ff",
       foregroundColor: "#c8c8c8ff",
-      initialMediaURLs: [`http://${this.base_rul}/live/hls/carnaval.m3u8`],
+      initialMediaURLs: [`http://${this.base_rul}/live/dash/playlist_1080p.mpd`],
     };
   }
 
