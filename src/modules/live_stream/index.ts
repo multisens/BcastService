@@ -31,46 +31,6 @@ const dashDir = path.join(__dirname, '../../../public/dash');
 const fallbackDir = path.join(__dirname, '../../../dash');
 const targetDir = fs.existsSync(dashDir) ? dashDir : fallbackDir;
 
-let ultimoChunkDisponivel = 0;
-
-function verificarChunks() {
-    if (!fs.existsSync(targetDir)) return;
-
-    try {
-        const files = fs.readdirSync(targetDir);
-        let maiorChunk = 0;
-
-        for (const file of files) {
-            if (!file.endsWith('.m4s')) continue;
-
-            const match = file.match(/\d+/g);
-            if (!match) continue;
-
-            const chunk = parseInt(match[match.length - 1], 10);
-            if (chunk > maiorChunk) {
-                maiorChunk = chunk;
-            }
-        }
-
-        if (maiorChunk !== ultimoChunkDisponivel) {
-            ultimoChunkDisponivel = maiorChunk;
-            logger.info(`Novo chunk disponível: ${ultimoChunkDisponivel}`);
-        }
-    } catch (error) {
-        logger.error('Erro ao verificar diretório de chunks:', error);
-    }
-}
-
-// Inicializa a verificação e monitora a pasta
-verificarChunks();
-
-if (fs.existsSync(targetDir)) {
-    fs.watch(targetDir, (eventType, filename) => {
-        if (!filename || !filename.endsWith('.m4s')) return;
-        verificarChunks();
-    });
-    logger.info(`Monitorando chunks em: ${targetDir}`);
-}
 
 export function setBroker(client: MqttClient) {
     broker = client;
@@ -94,34 +54,57 @@ function generateMPDWithEvents(file_path: string): string {
     }
 
     try {
-        const eventsData = JSON.parse(fs.readFileSync(events_path, 'utf8'));
-        const timescale = 1000;
-        const segmentDuration = 1;
+       
+const eventsData = JSON.parse(
+    fs.readFileSync(events_path, "utf8")
+);
 
-        const maxSeg = eventsData.last_seg || 60;
-        const lastSeg = eventsData.last_seg;
-        let eventStreamXml = `  <EventStream schemeIdUri="urn:mpeg:dash:event:2012" timescale="${timescale}" maxSegment="${maxSeg}"> lastSegment="${lastSeg}"\n`;
+const timescale = 1000;
 
-        eventsData.actions.forEach((act: any, index: number) => {
-            const presentationTime = act.seg_start * segmentDuration * timescale;
-            const duration = (act.seg_end - act.seg_start) * segmentDuration * timescale;
-            
-            const payloadObject = {
-                seg_start: act.seg_start,
-                seg_end: act.seg_end,
-                action: act.action
-            };
-            const payload = JSON.stringify(payloadObject);
+let eventStreamXml =
+    `<EventStream ` +
+    `schemeIdUri="urn:mpeg:dash:event:2012" ` +
+    `timescale="${timescale}" ` +
+    `lastSegment="${eventsData.last_seg}">\n`;
 
-            eventStreamXml += `    <Event presentationTime="${presentationTime}" duration="${duration}" id="${index + 1}" segStart="${act.seg_start}" segEnd="${act.seg_end}">\n`;
-            eventStreamXml += `      ${payload}\n`;
-            eventStreamXml += `    </Event>\n`;
-        });
+eventsData.actions.forEach((act: any, index: number) => {
+    // seg_start e seg_end representam segundos.
+    const presentationTime = Math.round(
+        act.seg_start * timescale
+    );
 
-        eventStreamXml += `  </EventStream>`;
+    const duration = Math.round(
+        (act.seg_end - act.seg_start) * timescale
+    );
 
-        mpdContent = mpdContent.replace(/<EventStream[\s\S]*?<\/EventStream>/g, '');
-        return mpdContent.replace(/<Period([^>]*)>/, `<Period$1>\n${eventStreamXml}`);
+    const payload = JSON.stringify({
+        seg_start: act.seg_start,
+        seg_end: act.seg_end,
+        action: act.action,
+    });
+
+    eventStreamXml +=
+        `  <Event ` +
+        `presentationTime="${presentationTime}" ` +
+        `duration="${duration}" ` +
+        `id="${index + 1}" ` +
+        `segStart="${act.seg_start}" ` +
+        `segEnd="${act.seg_end}">` +
+        `${payload}</Event>\n`;
+});
+
+eventStreamXml += `</EventStream>`;
+
+mpdContent = mpdContent.replace(
+    /<EventStream[\s\S]*?<\/EventStream>/g,
+    ""
+);
+
+return mpdContent.replace(
+    /<Period([^>]*)>/,
+    `<Period$1>\n${eventStreamXml}`
+);
+
     } catch (error) {
         logger.error('Erro ao injetar EventStream no MPD:', error);
         return mpdContent;

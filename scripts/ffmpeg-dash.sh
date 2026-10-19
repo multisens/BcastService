@@ -21,10 +21,10 @@ ffmpeg \
 -keyint_min 48 \
 -sc_threshold 0 \
 -seg_duration 2 \
--window_size 20 \
+-window_size 5 \
 -extra_window_size 20 \
 -use_template 1 \
--use_timeline 0 \
+-use_timeline 1 \
 -adaptation_sets "id=0,streams=v" \
 -f dash \
 "$OUTPUT_DIR/$MPD_NAME"
