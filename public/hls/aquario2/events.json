@@ -21,7 +21,7 @@
                     {
                         "type": "ScentType",
                         "action": "start",
-                        "intensity": 100
+                        "intensityValue": 10
                     }
                 ]
             }
@@ -132,7 +132,7 @@
                     {
                         "type": "ScentType",
                         "action": "stop",
-                        "intensity": 0
+                        "intensityValue": 0
                     }
                 ]
             }

@@ -47,7 +47,7 @@
                         console.log("UFF: Sending Color Event to SEPE", effect.description)
                         playLightEffect(sepe, effect.action, effect.color, effect.location)
                     } else if (effect.type === "ScentType") {
-                        playScentEffect(sepe, effect.action, effect.intensity, effect.location)
+                        playScentEffect(sepe, effect.action, effect.intensityValue, effect.location, effect.scent)
                     } else if (effect.type === "WindType") {
                         playWindEffect(sepe, effect.action, effect.intensityValue, effect.location)
                     }

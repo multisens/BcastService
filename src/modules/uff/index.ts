@@ -16,7 +16,10 @@ class UFF implements ServiceInterface {
 
   constructor() {
     this.router = express.Router();
-    this.sid = process.env.UFF_SID || `urn:tv30:service:${cuid.slug()}`;
+    // globalServiceId fixo (o mesmo do compose), e nao mais sorteado a cada
+    // partida: pela A6 (Joel, 15/10) ele vira o serviceContextId das APIs,
+    // e os dados de emissora do perfil ficam guardados sob ele.
+    this.sid = process.env.UFF_SID || "urn:tv30:service:uff";
     // appId FIXO por aplicacao (decisao do Luis em 11/10): a Tabela 10 diz que o
     // appId "uniquely identifies the Broadcaster Application", e o AoP tira
     // dele o host proprio da aplicacao (P1.3); sorteado a cada partida, o host
@@ -44,7 +47,7 @@ class UFF implements ServiceInterface {
         globalServiceId: this.sid,
         appVersion: 1,
         appName: 'UFF TV',
-        appIcon: '<svg viewBox="0 0 180 95" style="fill:#003461;fill-opacity:1;fill-rule:evenodd;stroke:none" preserveAspectRatio="xMidYMid meet">' +
+        appIcon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 95" style="fill:#003461;fill-opacity:1;fill-rule:evenodd;stroke:none" preserveAspectRatio="xMidYMid meet">' +
                     '<path d="m 101.375,0 c -12.408054,0 -22.5,10.091948 -22.5,22.5 l 0,0.53125 0,15.09375 -23.0625,0 0,32.5625 -0.03125,0.5 c -0.246865,3.707996 -3.22521,6.625 -6.84375,6.625 -3.618034,0 -6.564884,-2.914791 -6.8125,-6.625 l -0.03125,-0.5 0,-32.5625 -38.15625,0 0,16.03125 22.0625,0 0,16.53125 0,0.53125 c 0,12.664481 10.272113,22.968749 22.9375,22.96875 12.665385,0 22.968753,-10.303368 22.96875,-22.96875 l 0,-0.53125 0,-16.53125 6.96875,0 0,40.03125 15.34375,0 0,-40.03125 29.625,0 0,40.03125 15.34375,0 0,-40.03125 44.65625,0 0,-16.03125 -44.65625,0 0,-15.09375 0.0312,0 0.0312,-0.5 c 0.25591,-3.745927 3.30223,-6.6875 7.0625,-6.6875 3.76026,0 6.83802,2.944279 7.09375,6.6875 l 0.0312,0.5 0,9.125 15.375,0 0,-9.125 0,-0.53125 c 0,-12.408052 -10.09194,-22.5 -22.5,-22.5 -12.40806,0 -22.46875,10.09285 -22.46875,22.5 0,-12.40715 -10.0607,-22.5 -22.46875,-22.5 z m 0,15.84375 c 3.76847,0 6.81584,2.932396 7.0625,6.6875 l 0.0312,0.5 0,9.125 15.375,0 0,5.96875 -29.625,0 0,-15.09375 0.03125,0 0.03125,-0.5 c 0.245979,-3.752902 3.324834,-6.6875 7.09375,-6.6875 z"/>' +
                  '</svg>',
         bannerIcon:
