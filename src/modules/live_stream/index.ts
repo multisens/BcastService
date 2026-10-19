@@ -26,12 +26,6 @@ let current_playlist: hlsPlaylist = {
 let max_seg = 60; // default number of segments to restart
 let broker: MqttClient;
 
-// Define diretório dos chunks DASH
-const dashDir = path.join(__dirname, '../../../public/dash');
-const fallbackDir = path.join(__dirname, '../../../dash');
-const targetDir = fs.existsSync(dashDir) ? dashDir : fallbackDir;
-
-
 export function setBroker(client: MqttClient) {
     broker = client;
 }
@@ -54,109 +48,62 @@ function generateMPDWithEvents(file_path: string): string {
     }
 
     try {
-       
-const eventsData = JSON.parse(
-    fs.readFileSync(events_path, "utf8")
-);
+            
+        const eventsData = JSON.parse(
+            fs.readFileSync(events_path, "utf8")
+        );
 
-const timescale = 1000;
+        const timescale = 1000;
 
-let eventStreamXml =
-    `<EventStream ` +
-    `schemeIdUri="urn:mpeg:dash:event:2012" ` +
-    `timescale="${timescale}" ` +
-    `lastSegment="${eventsData.last_seg}">\n`;
+        let eventStreamXml =
+            `<EventStream ` +
+            `schemeIdUri="urn:mpeg:dash:event:2012" ` +
+            `timescale="${timescale}" ` +
+            `lastSegment="${eventsData.last_seg}">\n`;
 
-eventsData.actions.forEach((act: any, index: number) => {
-    // seg_start e seg_end representam segundos.
-    const presentationTime = Math.round(
-        act.seg_start * timescale
-    );
+        eventsData.actions.forEach((act: any, index: number) => {
+            // seg_start e seg_end representam segundos.
+            const presentationTime = Math.round(
+                act.seg_start * timescale
+            );
 
-    const duration = Math.round(
-        (act.seg_end - act.seg_start) * timescale
-    );
+            const duration = Math.round(
+                (act.seg_end - act.seg_start) * timescale
+            );
 
-    const payload = JSON.stringify({
-        seg_start: act.seg_start,
-        seg_end: act.seg_end,
-        action: act.action,
-    });
+            const payload = JSON.stringify({
+                seg_start: act.seg_start,
+                seg_end: act.seg_end,
+                action: act.action,
+            });
 
-    eventStreamXml +=
-        `  <Event ` +
-        `presentationTime="${presentationTime}" ` +
-        `duration="${duration}" ` +
-        `id="${index + 1}" ` +
-        `segStart="${act.seg_start}" ` +
-        `segEnd="${act.seg_end}">` +
-        `${payload}</Event>\n`;
-});
+            eventStreamXml +=
+                `  <Event ` +
+                `presentationTime="${presentationTime}" ` +
+                `duration="${duration}" ` +
+                `id="${index + 1}" ` +
+                `segStart="${act.seg_start}" ` +
+                `segEnd="${act.seg_end}">` +
+                `${payload}</Event>\n`;
+        });
 
-eventStreamXml += `</EventStream>`;
+        eventStreamXml += `</EventStream>`;
 
-mpdContent = mpdContent.replace(
-    /<EventStream[\s\S]*?<\/EventStream>/g,
-    ""
-);
+        mpdContent = mpdContent.replace(
+            /<EventStream[\s\S]*?<\/EventStream>/g,
+            ""
+        );
 
-return mpdContent.replace(
-    /<Period([^>]*)>/,
-    `<Period$1>\n${eventStreamXml}`
-);
+        return mpdContent.replace(
+            /<Period([^>]*)>/,
+            `<Period$1>\n${eventStreamXml}`
+        );
 
     } catch (error) {
         logger.error('Erro ao injetar EventStream no MPD:', error);
         return mpdContent;
     }
 }
-
-
-// Retorna o último chunk identificado no disco
-router.get('/dash/current-chunk', (req: Request, res: Response): void => {
-    res.setHeader('Cache-Control', 'no-store');
-
-    const dashDir = path.join(__dirname, '../../../public/dash');
-    const fallbackDir = path.join(__dirname, '../../../dash');
-    const targetDir = fs.existsSync(dashDir) ? dashDir : fallbackDir;
-
-    try {
-        if (!fs.existsSync(targetDir)) {
-            res.json({ chunk: 0 });
-            return;
-        }
-
-        const files = fs.readdirSync(targetDir);
-
-        let ultimoChunk = 0;
-        let ultimaModificacao = 0;
-
-        for (const file of files) {
-            if (!file.endsWith('.m4s')) continue;
-
-            const match = file.match(/(\d+)\.m4s$/);
-            if (!match) continue;
-
-            const filePath = path.join(targetDir, file);
-            const stats = fs.statSync(filePath);
-
-            if (stats.mtimeMs > ultimaModificacao) {
-                ultimaModificacao = stats.mtimeMs;
-                ultimoChunk = Number(match[1]);
-            }
-        }
-
-        res.json({ chunk: ultimoChunk });
-        return;
-
-    } catch (error) {
-        logger.error('Erro ao verificar chunks:', error);
-
-        res.status(500).json({ chunk: 0 });
-        return;
-    }
-});
-
 
 // http://<host>/live/dash/<playlist_name>.mpd
 router.get('/dash/:file', (req: Request, res: Response) => {
