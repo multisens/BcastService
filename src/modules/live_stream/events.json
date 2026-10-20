@@ -1,6 +1,5 @@
 {
   "last_seg" : 20,
-  "max_seg" : 20,
   "actions" : [
         {
             "seg_start": 0,
@@ -45,7 +44,7 @@
         },
         {
             "seg_start": 14,
-            "seg_end": 42,
+            "seg_end": 20,
             "action": {
                 "name" : "start",
                 "description": "Vermelho",
