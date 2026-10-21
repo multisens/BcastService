@@ -35,13 +35,11 @@ Required (server fails on boot if missing):
 Optional (with defaults):
 
 * `PORT` : HTTP server port (default `8081`). In the TV30 compose the
-  container port stays 8081, and since 2026-10-11 (decision C1 by Luis)
-  Docker publishes it on a free host port of its choice
-  (`docker compose port bcast 8081` shows which). `BCAST_PUBLISH` in the TV30
-  root `.env` sets what goes in `ports:`; `8081:8081` pins it, as the AoP
-  running on the host needs. It replaces `BCAST_PORT`, which the compose no
-  longer reads. The AoP in a container reaches bcast at `bcast:8081` on the
-  Docker network, regardless of the host port
+  container port stays 8081, and Docker publishes it on a free host port of
+  its choice (`docker compose port bcast 8081` shows which). `BCAST_PUBLISH`
+  in the TV30 root `.env` sets what goes in `ports:`; `8081:8081` pins it, as
+  the AoP running on the host needs. The AoP in a container reaches bcast at
+  `bcast:8081` on the Docker network, regardless of the host port
 * `BSID`, `EDUPLAY_SID`, `UFF_SID`, `WEBMEDIA_SID` : fixed service IDs (default
   generated via cuid.slug at each restart, which leaves orphan retained topics;
   the TV30 compose sets all four)
@@ -52,9 +50,9 @@ Optional (with defaults):
   compose does not start that server)
 * `EDUPLAY_APP_ID`, `UFF_APP_ID`, `USERS_TEST_APP_ID`, `WEBMEDIA_APP_ID` : the
   `appId` of each application in its BALD (default `urn:tv30:app:<module>`,
-  fixed; decision by Luis on 2026-10-11). The AoP derives the application's own
-  host name from it (P1.3), so a fixed `appId` keeps the host, and what the app
-  stores in the browser, across bcast restarts
+  fixed). The AoP derives the application's own host name from it, so a fixed
+  `appId` keeps the host, and what the app stores in the browser, across bcast
+  restarts
 * `LOG_LEVEL` : `ERROR` | `INFO` | `DEBUG` (default `ERROR`)
 
 See `.env.example` for the full list.
@@ -62,10 +60,9 @@ See `.env.example` for the full list.
 
 # Broadcaster apps in the AoP graphics layer
 
-Since P1.3 (decided by Luis on 10/10), the AoP opens each broadcaster app on
-its own origin, and proxies that host to the `bcastEntryPackageUrl` of the
-app (see `aop/src/app-hosts.js` in TV30). Since 2026-10-11 (decision by
-Luis) the URL keeps the prefix of the old path:
+The AoP opens each broadcaster app on its own origin, and proxies that host
+to the `bcastEntryPackageUrl` of the app (see `aop/src/app-hosts.js` in TV30).
+The URL carries the `/graphicsAppProxy` prefix:
 `http://<app>.<APPS_DOMAIN>:<AoP port>/graphicsAppProxy<bcastEntryPointUrl>`
 (default domain `apps.localhost`), for instance
 `http://urn-tv30-app-users-test.apps.localhost:8080/graphicsAppProxy/users-test`.
@@ -74,9 +71,9 @@ derived from the fixed `appId` (see Environment). The app's API calls then
 carry its own `Origin` (scheme, host and port only), which the AoP registers
 in `origins:associated` while the app runs.
 
-Being cross-origin, the AoP can no longer dispatch events straight into the
-app's document. It sends them by `postMessage`, and `public/js/aop-bridge.js`
-re-dispatches them on `document` in the same shape as before: `keydown`
+Being cross-origin, the AoP cannot dispatch events straight into the app's
+document. It sends them by `postMessage`, and `public/js/aop-bridge.js`
+re-dispatches them on `document`: `keydown`
 (`KeyboardEvent` with `key`), `timeupdate` (`CustomEvent`, `detail` = player
 time) and `stream_event` (`CustomEvent`, `detail` = JSON text). **Every app
 shown in the graphics layer must include it** (`<script
