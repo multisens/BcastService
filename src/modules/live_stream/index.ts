@@ -14,7 +14,7 @@ let current_playlist: hlsPlaylist = {
     segments_dur: '1.001000'
 };
 
-let max_seg = 60; // default number of segments to restart
+let max_seg = 60;
 let broker: MqttClient;
 
 export function setBroker(client: MqttClient) {
@@ -66,7 +66,7 @@ function get_playlist(res: Response, playlist_name: string): void {
     // back to zero so the video content loops.
     const elapsed = Math.floor(process.uptime());
     const loop_count = Math.floor(elapsed / max_seg);
-    const current_segment = elapsed % max_seg; // return to zero after maximum of segments
+    const current_segment = elapsed % max_seg;
 
     let playlist = '#EXTM3U\n';
     playlist += '#EXT-X-VERSION:6\n'; // 6 required for EXT-X-DISCONTINUITY-SEQUENCE

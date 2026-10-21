@@ -18,10 +18,7 @@ function copyEJSTemplates() {
                 const relativePath = path.relative(srcDir, fullPath);
                 const destPath = path.join(distDir, relativePath);
                 
-                // Criate the directory if it does not exist
                 fs.mkdirSync(path.dirname(destPath), { recursive: true });
-                
-                // Copy the file
                 fs.copyFileSync(fullPath, destPath);
                 console.log(`Copied: ${relativePath}`);
             }

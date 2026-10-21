@@ -8,8 +8,6 @@ import { nanoid } from "nanoid";
 import { ServiceInterface, bam, esg, bald } from '../../types';
 dotenv.config();
 
-// O HOST_IP foi removido para seguir o padrão UFF (usar this.base_rul)
-
 class eduplay implements ServiceInterface {
   base_rul!: string;
   router: Router;
@@ -18,14 +16,11 @@ class eduplay implements ServiceInterface {
 
   constructor() {
     this.router = express.Router();
-    // globalServiceId fixo (o mesmo do compose), e nao mais sorteado a cada
-    // partida: pela A6 (Joel, 15/10) ele vira o serviceContextId das APIs,
+    // globalServiceId fixo (o mesmo do compose): e o serviceContextId das APIs,
     // e os dados de emissora do perfil ficam guardados sob ele.
     this.sid = process.env.EDUPLAY_SID || "urn:tv30:service:eduplay";
-    // appId FIXO por aplicacao (decisao do Luis em 11/10): a Tabela 10 diz que o
-    // appId "uniquely identifies the Broadcaster Application", e o AoP tira
-    // dele o host proprio da aplicacao (P1.3); sorteado a cada partida, o host
-    // (e o que a aplicacao guarda no navegador) mudava quando o bcast reiniciava.
+    // appId fixo: identifica a aplicacao (Tabela 10) e da a ela o host proprio no
+    // AoP; sorteado, o host e o que ela guarda no navegador mudariam a cada reinicio.
     this.appId = process.env.EDUPLAY_APP_ID || "urn:tv30:app:eduplay";
   }
 
@@ -35,13 +30,11 @@ class eduplay implements ServiceInterface {
     this.router.get('/play/:roomId', this.get_mobile.bind(this));
   }
 
-  // ATUALIZADO: Adicionado publish de 'bald'
   sendSLS(mqtt: MqttClient): void {
     mqtt.publish(`tlm/sls/${this.sid}/esg`, JSON.stringify(this.esg()), { retain : true });
     mqtt.publish(`tlm/sls/${this.sid}/bald`, JSON.stringify(this.bald()), { retain : true });
   }
 
-  // ATUALIZADO: Adicionado clear de 'bald'
   dispose(mqtt: MqttClient): void {
     mqtt.publish(`tlm/sls/${this.sid}/esg`, '', { retain : true });
     mqtt.publish(`tlm/sls/${this.sid}/bald`, '', { retain : true });
@@ -62,27 +55,21 @@ class eduplay implements ServiceInterface {
         '<rect width="160" height="90" fill="#282828"/>' +
         '<text x="80" y="50" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#c8c8c8">Eduplay Quiz</text>' +
         '</svg>',
-        // appDescription: '',
         backgroundColor: '#282828',
         foregroundColor: '#c8c8c8',
-        // initialMediaURLs tem uso 1 na Tabela 6 (antes omitido aqui, "app
-        // interativo"): o servico nao tem transmissao linear propria, entao
-        // aponta para o ao vivo simulado que o bcast ja serve (o mesmo do UFF)
+        // initialMediaURLs tem uso 1 (Tabela 6); sem transmissao linear propria,
+        // aponta para o ao vivo simulado do bcast (o mesmo do UFF)
         initialMediaURLs: [
           `http://${this.base_rul}/live/hls/aquario.m3u8`
         ]
     }
   }
 
-  // ATUALIZADO: URLs usam 'this.base_rul'
   private async get_root(req:Request, res:Response): Promise<void> {
     const roomId = nanoid(6).toUpperCase();
 
-    // Extrai o hostname de 'this.base_rul' (formato esperado: 'hostname:port')
     const hostname = this.base_rul.split(':')[0];
 
-    // Deriva do proprio base_rul (era endereco fixo 192.168.68.100 — defeito
-    // 9 da vacina, nao funcionava fora daquela rede)
     const playerUrl = `http://${this.base_rul}/eduplay/play/${roomId}`;
     const logicServerUrl = `http://${hostname}:${process.env.EDUPLAY_LOGIC_PORT || '8082'}`;
 
@@ -96,13 +83,10 @@ class eduplay implements ServiceInterface {
     res.send(html);
   }
 
-  // ATUALIZADO: URLs usam 'this.base_rul'
   private async get_mobile(req: Request, res: Response): Promise<void> {
     const { roomId } = req.params;
-    
-    // Extrai o hostname de 'this.base_rul'
     const hostname = this.base_rul.split(':')[0];
-    const logicServerUrl = `http://${hostname}:8082`; // Mantém a porta 8082
+    const logicServerUrl = `http://${hostname}:8082`;
 
     const html = await ejs.renderFile(path.join(__dirname, 'quiz-player.ejs'), 
         {
@@ -136,7 +120,6 @@ class eduplay implements ServiceInterface {
     };
   }
 
-  // NOVO: Método 'bald' adicionado para seguir o padrão 'uff'
   private bald(): bald {
     let validFrom = new Date();
     let validUntil = new Date();
@@ -146,12 +129,12 @@ class eduplay implements ServiceInterface {
       {
         appContextId: `urn:tv30:appcontext:${cuid.slug()}`,
         appId: this.appId,
-        appName: 'Eduplay Quiz', // Nome do app (do bam)
-        appType: 'TV30-Ginga-HTML5', // Padrão
-        bcastEntryPackageUrl: `http://${this.base_rul}`, // URL base do serviço
-        bcastEntryPointUrl: '/eduplay', // Ponto de entrada (root do router)
+        appName: 'Eduplay Quiz',
+        appType: 'TV30-Ginga-HTML5',
+        bcastEntryPackageUrl: `http://${this.base_rul}`,
+        bcastEntryPointUrl: '/eduplay',
         clearAppContextCacheDate: validFrom.toISOString(),
-        controlCode: 'AUTOSTART', // Padrão copiado do uff
+        controlCode: 'AUTOSTART',
         validFrom: validFrom.toISOString(),
         validUntil: validUntil.toISOString(),
       }

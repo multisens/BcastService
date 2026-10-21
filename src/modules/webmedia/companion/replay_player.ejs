@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Usamos a variável videoTitle (passada pelo EJS) para o título da página -->
     <title>Replay: <%= videoTitle %></title>
     <style>
         :root {
@@ -71,7 +70,6 @@
 </head>
 <body>
     <div class="video-container">
-        <!-- playsinline -->
         <video 
             src="<%= videoSrc %>" 
             controls 

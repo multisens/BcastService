@@ -1,6 +1,5 @@
 #!/bin/bash
 # USAGE: ./ffmpeg-dash.sh <path to file> [output dir]
-# (era um caminho de maquina pessoal fixado — defeito 9 da vacina)
 
 INPUT_FILE=$1
 OUTPUT_DIR="${2:-./dash}"
@@ -11,13 +10,11 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-# 1. Verifica a existência do arquivo de entrada
 if [ ! -f "$INPUT_FILE" ]; then
     echo "ERRO: O arquivo de entrada não foi encontrado: ${INPUT_FILE}"
     exit 1
 fi
 
-# 2. Cria apenas o diretório raiz de saída
 mkdir -p "$OUTPUT_DIR"
 
 echo -e "\n\n-------------------------------------------------------------------"
@@ -26,9 +23,6 @@ echo "MPD: ${OUTPUT_DIR}/${MPD_NAME}"
 echo "Usando loop infinito e Perfil Dinâmico (Live)."
 echo "Arquivos de Saída: ${OUTPUT_DIR}"
 echo -e "-------------------------------------------------------------------\n\n"
-
-# 3. Comando FFmpeg formatado para Live DASH.
-# TZ=UTC garante que os tempos no MPD sejam corretos (embora o DASH use UTC por padrão)
 
 TZ='UTC' ffmpeg \
     -stream_loop -1 -re \

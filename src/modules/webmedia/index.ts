@@ -16,14 +16,11 @@ class WebMedia implements ServiceInterface {
 
   constructor() {
     this.router = express.Router();
-    // globalServiceId fixo (o mesmo do compose), e nao mais sorteado a cada
-    // partida: pela A6 (Joel, 15/10) ele vira o serviceContextId das APIs,
+    // globalServiceId fixo (o mesmo do compose): e o serviceContextId das APIs,
     // e os dados de emissora do perfil ficam guardados sob ele.
     this.sid = process.env.WEBMEDIA_SID || "urn:tv30:service:webmedia";
-    // appId FIXO por aplicacao (decisao do Luis em 11/10): a Tabela 10 diz que o
-    // appId "uniquely identifies the Broadcaster Application", e o AoP tira
-    // dele o host proprio da aplicacao (P1.3); sorteado a cada partida, o host
-    // (e o que a aplicacao guarda no navegador) mudava quando o bcast reiniciava.
+    // appId fixo: identifica a aplicacao (Tabela 10) e da a ela o host proprio no
+    // AoP; sorteado, o host e o que ela guarda no navegador mudariam a cada reinicio.
     this.appId = process.env.WEBMEDIA_APP_ID || "urn:tv30:app:webmedia";
   }
 
@@ -31,7 +28,6 @@ class WebMedia implements ServiceInterface {
     this.base_rul = base_rul;
     this.router.get("/", this.get_root.bind(this));
 
-    // --- Companion routes ---
     this.router.get("/companion", this.get_companion.bind(this));
 
     this.router.get("/companion/vote", this.get_vote_menu.bind(this));
@@ -80,11 +76,8 @@ class WebMedia implements ServiceInterface {
 
   private async get_root(req: Request, res: Response): Promise<void> {
     const html = await ejs.renderFile(path.join(__dirname, "app.ejs"), {
-      // Base HTTP deste servidor de midia (era endereco fixo 192.168.68.100
-      // dentro do app — defeito 9 da vacina: nao funcionava fora daquela rede)
       mediaBase: `http://${this.base_rul}`,
-      // Caminhos NO DISPOSITIVO REMOTO (player NCL360). Eram caminhos de uma
-      // maquina pessoal fixados no codigo; agora vem de configuracao.
+      // Caminhos no dispositivo remoto (player NCL360), nao no bcast.
       remoteMediaPath: process.env.WEBMEDIA_REMOTE_MEDIA_PATH || "",
       remoteUserFilesPath: process.env.WEBMEDIA_REMOTE_USERFILES_PATH || "",
     });
@@ -94,9 +87,7 @@ class WebMedia implements ServiceInterface {
   private async get_companion(req: Request, res: Response): Promise<void> {
     const html = await ejs.renderFile(
       path.join(__dirname, "companion/companion.ejs"),
-      {
-        //params
-      }
+      {}
     );
     res.send(html);
   }
@@ -104,9 +95,7 @@ class WebMedia implements ServiceInterface {
   private async get_vote_menu(req: Request, res: Response): Promise<void> {
     const html = await ejs.renderFile(
       path.join(__dirname, "companion/vote_menu.ejs"),
-      {
-        //params
-      }
+      {}
     );
     res.send(html);
   }
@@ -114,9 +103,7 @@ class WebMedia implements ServiceInterface {
   private async get_replay_menu(req: Request, res: Response): Promise<void> {
     const html = await ejs.renderFile(
       path.join(__dirname, "companion/replay_menu.ejs"),
-      {
-        //params
-      }
+      {}
     );
     res.send(html);
   }
@@ -186,10 +173,7 @@ class WebMedia implements ServiceInterface {
         appContextId: `urn:tv30:appcontext:${cuid.slug()}`,
         appId: this.appId,
         appName: "WebMedia App",
-        // appIcon?: string,
         appType: "TV30-Ginga-HTML5",
-        // bbandEntryPointUrl?: string,
-        // bcastEntryPackageUrl: path.join(require.main?.path as string, '../public'),
         bcastEntryPackageUrl: `http://${this.base_rul}`,
         bcastEntryPointUrl: "/webmedia",
         clearAppContextCacheDate: validFrom.toISOString(),

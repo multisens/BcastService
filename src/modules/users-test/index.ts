@@ -17,10 +17,8 @@ class UsersTest implements ServiceInterface {
   constructor() {
     this.router = express.Router();
     this.sid = process.env.USERS_TEST_SID || "urn:tv30:service:users-test";
-    // appId FIXO por aplicacao (decisao do Luis em 11/10): a Tabela 10 diz que o
-    // appId "uniquely identifies the Broadcaster Application", e o AoP tira
-    // dele o host proprio da aplicacao (P1.3); sorteado a cada partida, o host
-    // (e o que a aplicacao guarda no navegador) mudava quando o bcast reiniciava.
+    // appId fixo: identifica a aplicacao (Tabela 10) e da a ela o host proprio no
+    // AoP; sorteado, o host e o que ela guarda no navegador mudariam a cada reinicio.
     this.appId = process.env.USERS_TEST_APP_ID || "urn:tv30:app:users-test";
   }
 
@@ -60,9 +58,8 @@ class UsersTest implements ServiceInterface {
       appDescription: "Lista usuários e troca o perfil ativo",
       backgroundColor: "#1a1a2e",
       foregroundColor: "#e2e8f0",
-      // initialMediaURLs tem uso 1 na Tabela 6. O servico de teste nao tem
-      // transmissao linear propria: aponta para o ao vivo simulado que o
-      // bcast ja serve (o mesmo do UFF)
+      // initialMediaURLs tem uso 1 (Tabela 6); sem transmissao linear propria,
+      // aponta para o ao vivo simulado do bcast (o mesmo do UFF)
       initialMediaURLs: [`http://${this.base_rul}/live/hls/aquario.m3u8`],
     };
   }

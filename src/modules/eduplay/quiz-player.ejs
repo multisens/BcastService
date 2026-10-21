@@ -77,10 +77,8 @@
         console.log(message);
       });
 
-      // Mensagens do socket.io (servidor de logica do quiz) entram como TEXTO
-      // (textContent), nao como HTML (correcao de 12/10, spec-1210-defeitos3
-      // item 6): antes, a duracao, a mensagem de fim e a de erro iam para o
-      // innerHTML sem escape, e HTML nelas rodava no celular do jogador.
+      // Texto do servidor do quiz entra por textContent, nunca por innerHTML:
+      // HTML nele rodaria no celular do jogador.
       function showText(tag, text, style) {
         const el = document.createElement(tag);
         if (style) el.setAttribute("style", style);

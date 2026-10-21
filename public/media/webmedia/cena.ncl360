@@ -2,7 +2,6 @@
 
 <ncl360 id="cena">
     <head>
-        <!-- regioes customizadas -->
 		<region id="botao_3" polar="0d" azimuthal="-25d" width="2m" height="2m" radius="6m" pin="environment"/>
 		<region id="botao_1" polar="0d" azimuthal="0d" width="2m" height="2m" radius="6m" pin="environment"/>
 		<region id="botao_2" polar="0d" azimuthal="25d" width="2m" height="2m" radius="6m" pin="environment"/>
@@ -12,7 +11,6 @@
 		<region id="vota_1_1" polar="0d" azimuthal="0d" width="2m" height="2m" radius="6m" pin="environment"/>
 		<region id="vota_2_1" polar="0d" azimuthal="25d" width="2m" height="2m" radius="6m" pin="environment"/>
         
-        <!-- caracteristicas de apresentacao -->
         <descriptor id="dbeijflor" region="default.sky" projection="equirectangular" volume="1" dur = "180"/>
         <descriptor id="dgranderio" region="default.sky" projection="equirectangular" volume="1" dur = "180"/>
         <descriptor id="dhub" region="default.sky" projection="equirectangular" volume="1" dur = "600" />
@@ -33,9 +31,8 @@
 		<port component="botao1"/>
 		<port component="botao2"/>
 
-		<!-- midias com caminho RELATIVO a esta cena (servida estatica pelo bcast em
-		     /media/webmedia/cena.ncl360): o player as busca no mesmo host:porta de
-		     onde baixou a cena. Antes: URL absoluta com IP fixo de outra rede. -->
+		<!-- caminhos relativos a esta cena: o player busca as midias no mesmo
+		     host:porta de onde baixou a cena (o bcast). -->
 		
         <media id="hub" src="media/hub.mp4" descriptor="dhub"/>
 

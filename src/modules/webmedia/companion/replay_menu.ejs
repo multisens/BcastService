@@ -50,22 +50,19 @@
         margin-bottom: 2rem;
       }
 
-      /* Grid dos cards */
       .replay-grid {
         display: grid;
-        /* Duas colunas de tamanho igual, com espaço entre elas */
         grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem; /* Espaçamento entre os cards */
+        gap: 1.5rem;
       }
 
-      /* Estilo do card individual */
       .replay-link {
         display: flex;
         flex-direction: column;
         align-items: center;
 
         background-color: var(--cor-card);
-        border-radius: 0.75rem; /* 12px */
+        border-radius: 0.75rem;
         box-shadow: 0 10px 15px -3px var(--cor-sombra),
           0 4px 6px -2px var(--cor-sombra);
         padding: 1.5rem;
@@ -102,7 +99,6 @@
         background-color: #eee;
       }
 
-      /* Para telas menores (celulares), uma coluna só */
       @media (max-width: 600px) {
         .replay-grid {
           grid-template-columns: 1fr;

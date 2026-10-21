@@ -9,7 +9,7 @@
       body {
         height: 100%;
         margin: 0;
-        overflow: hidden; /* Esconde barras de rolagem */
+        overflow: hidden;
       }
       body {
         font-family: sans-serif;
@@ -38,7 +38,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        z-index: -1; /* Colocado atrás de todo o conteúdo */
+        z-index: -1;
       }
       #qrcode-overlay {
         display: none;
@@ -89,9 +89,8 @@
         transform: scale(1.05);
         box-shadow: 0 0 20px #2ecc71;
       }
-      /* --- NOVO: Estilo para o OVERLAY de estatísticas --- */
       #stats-overlay {
-        display: none; /* Começa escondido */
+        display: none;
         position: fixed;
         bottom: 0;
         left: 0;
@@ -130,7 +129,6 @@
       <p>Obrigado por jogar.</p>
     </div>
 
-    <!-- P1.3: eventos do AoP (teclas, tempo do player, eventos do fluxo) por postMessage; ver js/aop-bridge.js -->
     <script src="js/aop-bridge.js"></script>
     <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/navigation.js"></script>
@@ -187,8 +185,8 @@
 
       socket.on("playVideo", ({ url }) => {
         console.log(`Recebido comando para tocar o vídeo: ${url}`);
-        showContainer(null); // Esconde todos os contêineres de conteúdo
-        statsOverlay.style.display = "none"; // Esconde o overlay de stats
+        showContainer(null);
+        statsOverlay.style.display = "none";
         videoPlayer.style.display = "block";
         videoPlayer.src = url;
         videoPlayer.play();
@@ -197,7 +195,7 @@
       socket.on("quiz:newQuestion", (question) => {
         console.log("Nova pergunta recebida:", question.text);
         videoPlayer.style.display = "none";
-        statsOverlay.style.display = "none"; // Esconde o overlay de stats da pergunta anterior
+        statsOverlay.style.display = "none";
         showContainer(questionContainer);
 
         questionTextEl.innerText = question.text;
@@ -213,28 +211,21 @@
 
         question.options.forEach((optionText, index) => {
           const li = document.createElement("li");
-          // Adiciona a classe de cor correspondente
           li.classList.add(colorClasses[index]);
-          // Adiciona o prefixo ao texto
           li.innerText = `${prefixes[index]} ${optionText}`;
           optionsListEl.appendChild(li);
         });
       });
 
-      // --- LÓGICA MODIFICADA PARA EXIBIR RESULTADOS ---
       socket.on("quiz:endQuestion", ({ correctAnswerIndex, stats }) => {
         console.log("Fim da pergunta. Exibindo estatísticas:", stats);
 
-        // 1. Destaca a resposta correta na lista que já está na tela
         const listItems = optionsListEl.getElementsByTagName("li");
         if (listItems[correctAnswerIndex]) {
           listItems[correctAnswerIndex].classList.add("correct-answer");
         }
 
-        // 2. Preenche e exibe o overlay de estatísticas
-        // (como TEXTO, e nao HTML: os numeros vem do socket.io — correcao de
-        // 12/10, spec-1210-defeitos3 item 6, o mesmo defeito do
-        // quiz-player.ejs)
+        // Como texto, nao HTML: os numeros vem do socket.io.
         statsOverlay.innerHTML = "";
         for (const [cls, label, value] of [["stat-correct", "Acertos", stats.correct], ["stat-incorrect", "Erros", stats.incorrect]]) {
           const div = document.createElement("div");

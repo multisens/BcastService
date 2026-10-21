@@ -16,14 +16,11 @@ class UFF implements ServiceInterface {
 
   constructor() {
     this.router = express.Router();
-    // globalServiceId fixo (o mesmo do compose), e nao mais sorteado a cada
-    // partida: pela A6 (Joel, 15/10) ele vira o serviceContextId das APIs,
+    // globalServiceId fixo (o mesmo do compose): e o serviceContextId das APIs,
     // e os dados de emissora do perfil ficam guardados sob ele.
     this.sid = process.env.UFF_SID || "urn:tv30:service:uff";
-    // appId FIXO por aplicacao (decisao do Luis em 11/10): a Tabela 10 diz que o
-    // appId "uniquely identifies the Broadcaster Application", e o AoP tira
-    // dele o host proprio da aplicacao (P1.3); sorteado a cada partida, o host
-    // (e o que a aplicacao guarda no navegador) mudava quando o bcast reiniciava.
+    // appId fixo: identifica a aplicacao (Tabela 10) e da a ela o host proprio no
+    // AoP; sorteado, o host e o que ela guarda no navegador mudariam a cada reinicio.
     this.appId = process.env.UFF_APP_ID || "urn:tv30:app:uff";
   }
   
@@ -65,10 +62,7 @@ class UFF implements ServiceInterface {
   }
 
   private async get_root(req:Request, res:Response): Promise<void> {
-    const html = await ejs.renderFile(path.join(__dirname, 'app.ejs'),
-      {
-        //params
-      });
+    const html = await ejs.renderFile(path.join(__dirname, 'app.ejs'), {});
     res.send(html);
   }
 

@@ -51,9 +51,8 @@ async function playLightEffect(sepe, action, color, location) {
     }
 }
 
-// C3 (Joel, 15/10): propriedades do efeito de cheiro pela Tabela A.30 da
-// norma: intensityValue (0 a 10) e scent (o tipo de cheiro). Ate 15/10 ia
-// "intensity", nome que a C.6.16.3 recusa (101).
+// Efeito de cheiro pela Tabela A.30: intensityValue (0 a 10) e scent (o tipo);
+// com "intensity", a C.6.16.3 responde 101.
 async function playScentEffect(sepe, action, intensityValue, location, scent) {
     const properties = [{ name: "intensityValue", value: intensityValue }];
     if (scent) {

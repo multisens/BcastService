@@ -50,22 +50,19 @@
         margin-bottom: 2rem;
       }
 
-      /* Grid dos cards */
       .vote-grid {
         display: grid;
-        /* Duas colunas de tamanho igual, com espaço entre elas */
         grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem; /* Espaçamento entre os cards */
+        gap: 1.5rem;
       }
 
-      /* Estilo do card individual */
       .vote-button {
         display: flex;
         flex-direction: column;
         align-items: center;
 
         background-color: var(--cor-card);
-        border-radius: 0.75rem; /* 12px */
+        border-radius: 0.75rem;
         box-shadow: 0 10px 15px -3px var(--cor-sombra),
           0 4px 6px -2px var(--cor-sombra);
         padding: 1.5rem;
@@ -102,7 +99,6 @@
         background-color: #eee;
       }
 
-      /* Para telas menores (celulares), uma coluna só */
       @media (max-width: 600px) {
         .vote-grid {
           grid-template-columns: 1fr;
@@ -127,7 +123,6 @@
       <h1>Vote na sua escola de samba favorita!</h1>
 
       <div class="vote-grid" id="vote-container">
-        <!-- Linha 1 -->
         <button class="vote-button" data-choice="beijaflor">
           <span class="vote-button-title">Beija Flor</span>
           <img
@@ -184,20 +179,17 @@
       document.addEventListener("DOMContentLoaded", () => {
         const WRAPPER_ORIGIN = "*";
 
-        // --- Referências da DOM ---
         const voteContainer = document.getElementById("vote-container");
         const log = document.getElementById("message-log");
 
         if (!voteContainer) console.warn("No vote container found")
 
         function sendToWrapper(payload) {
-          // Monta a mensagem no formato padrão
           const message = {
             type: "iframe-message",
             payload: payload,
           };
 
-          // Envia a mensagem para o 'window.parent' (o wrapper)
           window.parent.postMessage(message, WRAPPER_ORIGIN);
           console.log("Iframe: Enviando para o Wrapper:", payload);
         }
