@@ -369,12 +369,12 @@
           handle_device_NCL360 = data.devices[data.devices.length - 1].handle;
           handle_vr = handle_device_NCL360;
           const resp_1 = await fetch(`http://localhost:44642/tv3/remote-device/device/${handle_device_NCL360}`, { headers: { "Accept-Version": "100.0" } });
-          if (!resp_1.ok) return { handle: h, urls: [] };
+          if (!resp_1.ok) return { handle: handle_device_NCL360, urls: [] };
           const info = await resp_1.json();
 
           console.log("Url device NCL360 ", info );
 
-          // Usa a url que a API devolve (ws://, ou wss:// com o TLS do receptor):
+          // Usa a url que a API devolve (ws:// no ponto de entrada local):
           // montada a partir do handle, a porta sai errada na faixa 45000-45199.
           ws_VR = new WebSocket(info.url);
           
@@ -399,7 +399,6 @@
 
           if (msg && msg.message && msg.message.deviceClass === 'guarana') {
             handle_vr = msg.handle;
-            con
           } else if (msg && msg.message && msg.message.deviceClass === 'companion') {
             if (!handle_companion.includes(msg.handle)) handle_companion.push(msg.handle);
           } else if (msg && msg.type && msg.type === 'vote') {

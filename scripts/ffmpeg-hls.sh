@@ -6,7 +6,7 @@ OUTPUT_DIR="./public/hls/$2"
 MASTER_PLAYLIST_NAME="master.m3u8"
 CHILD_PLAYLIST_NAME="playlist_1080p.m3u8"
 
-if [ -z "$1" ] || [ -z "$2"]; then
+if [ -z "$1" ] || [ -z "$2" ]; then
   echo "USAGE: ./ffmpeg-hls.sh <path to file> <output subdir>"
   exit 1
 fi
