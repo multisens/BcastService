@@ -77,8 +77,8 @@
         console.log(message);
       });
 
-      // Texto do servidor do quiz entra por textContent, nunca por innerHTML:
-      // HTML nele rodaria no celular do jogador.
+      // Text of the quiz server goes in by textContent, never by innerHTML:
+      // HTML in it would run on the phone of the player.
       function showText(tag, text, style) {
         const el = document.createElement(tag);
         if (style) el.setAttribute("style", style);

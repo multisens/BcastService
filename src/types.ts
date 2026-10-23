@@ -11,11 +11,9 @@ export interface ServiceInterface {
 }
 
 
-// Elemento BAM, Tabela 6 da ABNT NBR 25608. appVersion e unsignedByte; cores em
-// '#RRGGBB' (sem alfa); bannerIcon obrigatorio (SVG 16:9, modo estatico seguro,
-// <= 16 kB); appDescription <= 40 caracteres. initialMediaURLs tem uso 1: a
-// Bootstrap Application manda o Persistent Media Player tocar essas URLs quando
-// e lancada sem initialMediaURL.
+// BAM element, Table 6. appVersion is unsignedByte; colors as '#RRGGBB'
+// (no alpha); bannerIcon required (SVG 16:9, secure static mode, <= 16 kB);
+// appDescription <= 40 characters. initialMediaURLs has use 1.
 export type bam = {
   globalServiceId: string,
   appVersion: number,
