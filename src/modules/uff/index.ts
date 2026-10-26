@@ -16,11 +16,12 @@ class UFF implements ServiceInterface {
 
   constructor() {
     this.router = express.Router();
-    // globalServiceId fixo (o mesmo do compose): e o serviceContextId das APIs,
-    // e os dados de emissora do perfil ficam guardados sob ele.
+    // Fixed globalServiceId (the same as the compose): it is the
+    // serviceContextId of the APIs, and the broadcaster data of the profile are
+    // kept under it.
     this.sid = process.env.UFF_SID || "urn:tv30:service:uff";
-    // appId fixo: identifica a aplicacao (Tabela 10) e da a ela o host proprio no
-    // AoP; sorteado, o host e o que ela guarda no navegador mudariam a cada reinicio.
+    // Fixed appId: identifies the application (Table 10) and gives it its own
+    // host in the AoP.
     this.appId = process.env.UFF_APP_ID || "urn:tv30:app:uff";
   }
   

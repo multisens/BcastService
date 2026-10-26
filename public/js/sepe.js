@@ -51,8 +51,8 @@ async function playLightEffect(sepe, action, color, location) {
     }
 }
 
-// Efeito de cheiro pela Tabela A.30: intensityValue (0 a 10) e scent (o tipo);
-// com "intensity", a C.6.16.3 responde 101.
+// Scent effect by Table A.30: intensityValue (0 to 10) and scent (the type);
+// with "intensity", C.6.16.3 answers 101.
 async function playScentEffect(sepe, action, intensityValue, location, scent) {
     const properties = [{ name: "intensityValue", value: intensityValue }];
     if (scent) {
