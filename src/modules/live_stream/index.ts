@@ -62,26 +62,29 @@ function get_playlist(res: Response, playlist_name: string): void {
     }
 
     // elapsed grows without bound: it feeds a *monotonic* MEDIA-SEQUENCE, which
-    // the HLS spec requires. current_segment (the on-disk file index) still wraps
-    // back to zero so the video content loops.
+    // the HLS spec requires. current_segment (the on-disk file index) still
+    // wraps back to zero so the video content loops.
     const elapsed = Math.floor(process.uptime());
     const loop_count = Math.floor(elapsed / max_seg);
     const current_segment = elapsed % max_seg;
 
     let playlist = '#EXTM3U\n';
-    playlist += '#EXT-X-VERSION:6\n'; // 6 required for EXT-X-DISCONTINUITY-SEQUENCE
+    // 6 is required for EXT-X-DISCONTINUITY-SEQUENCE.
+    playlist += '#EXT-X-VERSION:6\n';
     playlist += `#EXT-X-TARGETDURATION:${current_playlist.target_dur}\n`;
-    // MEDIA-SEQUENCE must never go backwards, or VHS loses track of its buffered
-    // segments and throws "duration"/"end" of undefined on every loop.
+    // MEDIA-SEQUENCE must never go backwards, or VHS loses track of its
+    // buffered segments and throws "duration"/"end" of undefined on every loop.
     playlist += `#EXT-X-MEDIA-SEQUENCE:${elapsed}\n`;
-    // Number of loop-point discontinuities that already scrolled out of the window.
+    // Number of loop-point discontinuities that already scrolled out of the
+    // window.
     playlist += `#EXT-X-DISCONTINUITY-SEQUENCE:${current_segment === 0 ? Math.max(0, loop_count - 1) : loop_count}\n`;
     playlist += '#EXT-X-INDEPENDENT-SEGMENTS\n';
     let last_seg = null;
     for (let i = 0; i < current_playlist.playlist_size; i++) {
         let sn = current_segment + i;
-        // At the wrap the timeline restarts from the beginning of the video; tell
-        // the player so it resets its timestamp mapping instead of freezing.
+        // At the wrap the timeline restarts from the beginning of the video;
+        // tell the player so it resets its timestamp mapping instead of
+        // freezing.
         if (i === 0 && current_segment === 0 && loop_count > 0) {
             playlist += '#EXT-X-DISCONTINUITY\n';
         }
@@ -127,8 +130,8 @@ function get_segment(res: Response, file: string) {
     logger.debug(`... returning segment ${file}`);
 
 	res.setHeader('Content-Type', 'video/mp2t');
-    // Segmento de midia e imutavel (o nome carrega o numero de sequencia):
-    // cache longo na origem; o proxy respeita (B.6.3).
+    // A media segment is immutable (the name carries the sequence number):
+    // long cache at the origin (B.6.3).
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     res.sendFile(file_path, (err) => {
         if (err) {

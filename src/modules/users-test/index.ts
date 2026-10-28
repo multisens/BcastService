@@ -17,8 +17,8 @@ class UsersTest implements ServiceInterface {
   constructor() {
     this.router = express.Router();
     this.sid = process.env.USERS_TEST_SID || "urn:tv30:service:users-test";
-    // appId fixo: identifica a aplicacao (Tabela 10) e da a ela o host proprio no
-    // AoP; sorteado, o host e o que ela guarda no navegador mudariam a cada reinicio.
+    // Fixed appId: identifies the application (Table 10) and gives it its own
+    // host in the AoP.
     this.appId = process.env.USERS_TEST_APP_ID || "urn:tv30:app:users-test";
   }
 
@@ -58,8 +58,8 @@ class UsersTest implements ServiceInterface {
       appDescription: "Lista usuários e troca o perfil ativo",
       backgroundColor: "#1a1a2e",
       foregroundColor: "#e2e8f0",
-      // initialMediaURLs tem uso 1 (Tabela 6); sem transmissao linear propria,
-      // aponta para o ao vivo simulado do bcast (o mesmo do UFF)
+      // initialMediaURLs has use 1 (Table 6); without a linear transmission of
+      // its own, it points to the simulated live of bcast (the same as UFF).
       initialMediaURLs: [`http://${this.base_rul}/live/hls/aquario.m3u8`],
     };
   }

@@ -23,8 +23,8 @@ const _PORT:string = process.env.PORT || '8081';
 const app: Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// Cache (B.6.3): a origem declara a validade e o proxy do AoP respeita.
-// Playlist de live muda a cada segmento (1 s); segmento de midia e imutavel.
+// Cache (B.6.3): the origin declares the validity. A live playlist changes
+// on every segment (1 s); a media segment is immutable.
 app.use(express.static('public', {
     setHeaders: (res, filePath) => {
         if (filePath.endsWith('.m3u8') || filePath.endsWith('.mpd')) {
@@ -67,8 +67,8 @@ const services = new Map<string, ServiceInterface>([
 const bsid: string = process.env.BSID || cuid.slug();
 const bamt: bamt = [];
 
-// Em Docker, o AoP chega ao bcast pelo service-name (bcast:8081): localhost
-// dentro do container do AoP nao e o bcast.
+// In Docker, the AoP reaches bcast by the service name (bcast:8081):
+// localhost inside the AoP container is not bcast.
 const baseHost: string = process.env.BCAST_HOSTNAME || 'localhost';
 
 services.forEach((mod, key) => {
@@ -107,8 +107,9 @@ if (process.send) {
 }
 
 
-// Com listener de sinal o node nao encerra sozinho: sem o process.exit, o
-// container so cai no kill-timeout do docker, e os topicos retidos ficam orfaos.
+// With a signal listener node does not exit by itself: without
+// process.exit, the container only stops at the docker kill timeout, and the
+// retained topics are left orphan.
 function shutdown() {
   clean_topics();
   const hardExit = setTimeout(() => process.exit(0), 3000);
