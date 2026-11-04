@@ -246,7 +246,7 @@
 
       function receiveFrameMessage(e) {
         try {
-          // Algumas integrações enviam string JSON
+          // Some integrations send a JSON string.
           const m = JSON.parse(e.data);
           if (m && m.type === 'keydown' && m.key) {
             document.dispatchEvent(new KeyboardEvent('keydown', { key: m.key }));
@@ -255,7 +255,7 @@
         }
       }
 
-      //Timer ao abrir o fullscreen
+      // Timer when the fullscreen opens.
       setInterval(() => {
           if(timer_vote == 40)
           {
@@ -341,8 +341,10 @@
       let handle_vr = '';
       let handle_companion = [];
   let companionDevices = [];
-  let companionSockets = []; // array de { url, socket }
-  let companionMessages = []; // { url, raw, parsed?, timestamp }
+  // Array of { url, socket }.
+  let companionSockets = [];
+  // { url, raw, parsed?, timestamp }
+  let companionMessages = [];
       let ws_VR;
       let votos = [];
 
@@ -374,8 +376,9 @@
 
           console.log("Url device NCL360 ", info );
 
-          // Usa a url que a API devolve (ws:// no ponto de entrada local):
-          // montada a partir do handle, a porta sai errada na faixa 45000-45199.
+          // Uses the url the API returns (ws:// at the local entry point):
+          // built from the handle, the port would be wrong in the range
+          // 45000-45199.
           ws_VR = new WebSocket(info.url);
           
           ws_VR.onopen = function () {
@@ -505,7 +508,8 @@
               s.addEventListener('close', () => console.log('Socket closed', url));
               s.addEventListener('error', (err) => {
                 console.error('Socket error', url, err);
-                resolve(); // não bloqueia se der erro
+                // Does not block on an error.
+                resolve();
               });
             } catch (err) {
               console.error('Failed to open socket for', url, err);
@@ -548,7 +552,7 @@
       }
 
       function BroadcastToCompanionViaTV3WS(form) {
-        // Vai pelos sockets diretos de cada companion.
+        // Goes through the direct sockets of each companion.
         BroadcastToCompanionDirectSockets(form);
       }
 
@@ -667,7 +671,8 @@
           appid: '100',
           path: remoteMediaPath,
         });
-        // currentUser: id do perfil da carga inicial (infra/user-files-template/userData.json).
+        // currentUser: id of the profile of the initial load
+        // (infra/user-files-template/userData.json).
         SendConfigManual(ws_VR, {
           service: 'userapi',
           path: remoteUserFilesPath,
@@ -729,7 +734,8 @@
         mySpan.innerHTML = cardHtml(1, top[0]) + ' &nbsp; ' + cardHtml(2, top[1]);
       }
 
-      // Expondo funções globais para o navigation.js acionar via atributo `select`.
+      // Global functions for navigation.js to call through the `select`
+      // attribute.
       window.openVRPop = openVRPop;
       window.openCMPPop = openCMPPop;
       window.btnVRConn = btnVRConn;

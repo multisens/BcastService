@@ -225,7 +225,7 @@
           listItems[correctAnswerIndex].classList.add("correct-answer");
         }
 
-        // Como texto, nao HTML: os numeros vem do socket.io.
+        // As text, not HTML: the numbers come from socket.io.
         statsOverlay.innerHTML = "";
         for (const [cls, label, value] of [["stat-correct", "Acertos", stats.correct], ["stat-incorrect", "Erros", stats.incorrect]]) {
           const div = document.createElement("div");

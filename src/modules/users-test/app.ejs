@@ -167,10 +167,12 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // URL absoluta: a página vem do bcast, e o TV 3.0 WebServices responde na borda (44642).
+    // Absolute URL: the page comes from bcast, and the TV 3.0 WebServices
+    // answer at the edge (44642).
     const TV3WS = "http://" + window.location.hostname + ":44642";
 
-    let users = [];        // [{id, nickname, avatar}]
+    // [{id, nickname, avatar}]
+    let users = [];
     let focusIndex = 0;
     let currentUserId = null;
 
@@ -199,12 +201,15 @@
         '<path d="M 14 90 a 36 36 0 0 1 72 0" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>' +
       '</svg>';
 
-    // Avatar pela C.6.14.6: o campo avatar e o caminho do arquivo (Tabela 7), lido
-    // em /users/files (Tabela C.75). Vai por fetch porque a borda reconhece a
-    // aplicacao associada pelo Origin, que <img src> nao manda; o blob: num <img>
-    // impede o SVG de rodar script. Qualquer falha: DEFAULT_AVATAR_SVG.
-    const avatarUrls = new Map();   // avatar -> URL blob: ("" = falhou: o padrao)
-    let avatarGeneration = 0;       // descarta o que chega de uma carga anterior
+    // Avatar by C.6.14.6: the avatar field is the path of the file (Table 7),
+    // read from /users/files (Table C.75). By fetch, since the edge recognizes
+    // the associated application by the Origin, which <img src> does not send;
+    // the blob: in an <img> keeps the SVG from running script. Any failure:
+    // DEFAULT_AVATAR_SVG.
+    // avatar -> blob: URL ("" = failed: the default).
+    const avatarUrls = new Map();
+    // Discards what arrives from a previous load.
+    let avatarGeneration = 0;
 
     function avatarHtml(avatar) {
       const url = typeof avatar === "string" && avatar ? avatarUrls.get(avatar) : "";
@@ -225,7 +230,7 @@
       }
     }
 
-    // Um pedido por avatar distinto; a grade se redesenha quando todos chegam.
+    // One request per distinct avatar; the grid is redrawn when all arrive.
     async function loadAvatars() {
       const gen = ++avatarGeneration;
       const names = [...new Set(users.map(u => u.avatar).filter(a => typeof a === "string" && a))];
@@ -287,7 +292,7 @@
       $grid.innerHTML = '<div class="empty">carregando usuários…</div>';
 
       try {
-        // IDs (C.6.14.1)
+        // Ids (C.6.14.1).
         const r = await fetch(TV3WS + "/tv3/current-service/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

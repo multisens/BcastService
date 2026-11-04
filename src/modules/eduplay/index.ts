@@ -16,11 +16,12 @@ class eduplay implements ServiceInterface {
 
   constructor() {
     this.router = express.Router();
-    // globalServiceId fixo (o mesmo do compose): e o serviceContextId das APIs,
-    // e os dados de emissora do perfil ficam guardados sob ele.
+    // Fixed globalServiceId (the same as the compose): it is the
+    // serviceContextId of the APIs, and the broadcaster data of the profile are
+    // kept under it.
     this.sid = process.env.EDUPLAY_SID || "urn:tv30:service:eduplay";
-    // appId fixo: identifica a aplicacao (Tabela 10) e da a ela o host proprio no
-    // AoP; sorteado, o host e o que ela guarda no navegador mudariam a cada reinicio.
+    // Fixed appId: identifies the application (Table 10) and gives it its own
+    // host in the AoP.
     this.appId = process.env.EDUPLAY_APP_ID || "urn:tv30:app:eduplay";
   }
 
@@ -57,8 +58,9 @@ class eduplay implements ServiceInterface {
         '</svg>',
         backgroundColor: '#282828',
         foregroundColor: '#c8c8c8',
-        // initialMediaURLs tem uso 1 (Tabela 6); sem transmissao linear propria,
-        // aponta para o ao vivo simulado do bcast (o mesmo do UFF)
+        // initialMediaURLs has use 1 (Table 6); without a linear transmission
+        // of its own, it points to the simulated live of bcast (the same as
+        // UFF).
         initialMediaURLs: [
           `http://${this.base_rul}/live/hls/aquario.m3u8`
         ]

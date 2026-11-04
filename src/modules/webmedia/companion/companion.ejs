@@ -93,7 +93,7 @@
             }
         }
 
-        // Relay de votos: vote_menu.ejs envia via window.parent.postMessage
+        // Vote relay: vote_menu.ejs sends by window.parent.postMessage.
         window.addEventListener('message', (event) => {
             const msg = event.data;
             if (msg && msg.type === 'iframe-message' && msg.payload) {
