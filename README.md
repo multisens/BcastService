@@ -61,7 +61,7 @@ See `.env.example` for the full list.
 # Broadcaster apps in the AoP graphics layer
 
 The AoP opens each broadcaster app on its own origin, and proxies that host
-to the `bcastEntryPackageUrl` of the app (see `aop/src/app-hosts.js` in TV30).
+to the `bcastEntryPackageUrl` of the app (see `aop-shell/src/app-hosts.js` in TV30).
 The URL carries the `/graphicsAppProxy` prefix:
 `http://<app>.<APPS_DOMAIN>:<AoP port>/graphicsAppProxy<bcastEntryPointUrl>`
 (default domain `apps.localhost`), for instance
